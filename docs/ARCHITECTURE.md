@@ -11,7 +11,7 @@ graph TD
     B --> F[Servicios]
     F --> G[Estado Global]
     F --> H[API Services]
-    
+
     subgraph Frontend
         B
         C
@@ -47,7 +47,7 @@ sequenceDiagram
     participant W as Wheel Component
     participant S as Estado
     participant A as Animaciones
-    
+
     U->>W: Inicia Giro
     W->>S: Actualiza Estado
     S->>A: Trigger Animación
@@ -58,26 +58,62 @@ sequenceDiagram
 ## Componentes Principales
 
 ### 1. Wheel Component
+
 - Manejo de la lógica de giro
 - Renderizado de la ruleta
 - Gestión de animaciones
 - Cálculo de premios
 
 ### 2. Estado Global
+
 - Configuración de premios
 - Estado actual del juego
 - Historial de resultados
 - Preferencias de usuario
 
 ### 3. Servicios
+
 - Animaciones
 - Cálculos matemáticos
 - Gestión de eventos
 - Almacenamiento local
+- Analytics y métricas
+
+## Analytics y Métricas
+
+### 1. Métricas Principales
+
+- Total de giros
+- Premios ganados y reclamados
+- Tiempo promedio de reclamo
+- Distribución de premios
+- Datos de series temporales
+
+### 2. Engagement de Usuarios
+
+- Usuarios activos (diarios/semanales/mensuales)
+- Tasa de retorno
+- Puntuación de engagement
+- Horarios populares
+
+### 3. Rendimiento
+
+- Tiempos de carga
+- Tasa de error
+- Tasa de éxito
+- Predicciones y tendencias
+
+### 4. Reportes
+
+- Formatos: PDF, XLSX, CSV
+- Tipos: General, Premios, Usuarios, Rendimiento
+- Filtros personalizables
+- Análisis predictivo
 
 ## Patrones de Diseño
 
 ### 1. Component Pattern
+
 ```typescript
 // Ejemplo de componente tipado
 interface WheelProps {
@@ -86,16 +122,13 @@ interface WheelProps {
   isSpinning: boolean;
 }
 
-const Wheel: React.FC<WheelProps> = ({
-  prizes,
-  onSpin,
-  isSpinning
-}) => {
+const Wheel: React.FC<WheelProps> = ({ prizes, onSpin, isSpinning }) => {
   // Implementación
 };
 ```
 
 ### 2. Custom Hooks
+
 ```typescript
 // Ejemplo de hook personalizado
 const useWheel = (config: WheelConfig) => {
@@ -103,7 +136,7 @@ const useWheel = (config: WheelConfig) => {
   const [currentPrize, setPrize] = useState<Prize | null>(null);
 
   // Lógica del hook
-  
+
   return {
     isSpinning,
     currentPrize,
@@ -115,11 +148,13 @@ const useWheel = (config: WheelConfig) => {
 ## Consideraciones de Rendimiento
 
 1. **Optimizaciones de React**
+
    - Uso de `useMemo` para cálculos costosos
    - `useCallback` para funciones estables
    - `React.memo` para prevenir re-renders
 
 2. **Animaciones**
+
    - Uso de `requestAnimationFrame`
    - CSS transforms para mejor performance
    - Lazy loading de assets
@@ -132,18 +167,21 @@ const useWheel = (config: WheelConfig) => {
 ## Escalabilidad
 
 ### 1. Nuevas Características
+
 - Sistema de temas
 - Múltiples tipos de ruleta
 - Sistemas de recompensa
 - Integración con APIs externas
 
 ### 2. Performance
+
 - Code splitting
 - Lazy loading
 - Caché de assets
 - Service Workers
 
 ### 3. Mantenibilidad
+
 - TypeScript strict mode
 - Tests exhaustivos
 - Documentación inline
