@@ -1,0 +1,55 @@
+.prize-verifier {
+  background-color: rgba(255, 255, 255, 0.1);
+  padding: 2rem;
+  border-radius: var(--border-radius);
+  margin: 2rem 0;
+}
+
+.verifier-container {
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+  margin-bottom: 1rem;
+}
+
+.code-input {
+  padding: 0.8rem 1rem;
+  font-size: 1rem;
+  border: 2px solid var(--primary-color);
+  border-radius: var(--border-radius);
+  background-color: transparent;
+  color: var(--text-color);
+  width: 300px;
+}
+
+.code-input:focus {
+  outline: none;
+  border-color: var(--secondary-color);
+}
+
+.verify-button {
+  background-color: var(--primary-color);
+  color: white;
+}
+
+.verify-button:hover:not(:disabled) {
+  background-color: var(--secondary-color);
+}
+
+.message {
+  margin-top: 1rem;
+  font-size: 1.1rem;
+  color: var(--text-color);
+}
+
+@media (max-width: 768px) {
+  .verifier-container {
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .code-input {
+    width: 100%;
+    max-width: 300px;
+  }
+} 

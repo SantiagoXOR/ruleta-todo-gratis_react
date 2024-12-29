@@ -1,0 +1,95 @@
+.app {
+  text-align: center;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background-color: #242424;
+  color: white;
+}
+
+.app-header {
+  padding: 2rem;
+}
+
+h1 {
+  font-family: "greycliff-cf", sans-serif;
+  font-weight: 900;
+  font-size: 3.5em;
+  margin: 0;
+  color: #F4DE00;
+  letter-spacing: -0.02em;
+}
+
+.subtitle {
+  font-family: "greycliff-cf", sans-serif;
+  font-weight: 300;
+  font-size: 1.5em;
+  margin: 1rem 0;
+  color: white;
+}
+
+.app-nav {
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+  padding: 0 2rem;
+  margin-bottom: 2rem;
+}
+
+.nav-button {
+  padding: 0.8rem 2rem;
+  font-size: 1.2em;
+  border: 2px solid #F4DE00;
+  border-radius: 50px;
+  background: transparent;
+  color: #F4DE00;
+  cursor: pointer;
+  font-family: "greycliff-cf", sans-serif;
+  font-weight: 700;
+  transition: all 0.3s ease;
+}
+
+.nav-button:hover {
+  background: rgba(244, 222, 0, 0.1);
+}
+
+.nav-button.active {
+  background: #F4DE00;
+  color: #841468;
+}
+
+main {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  padding: 2rem;
+}
+
+.footer-text {
+  font-family: "greycliff-cf", sans-serif;
+  font-weight: 400;
+  font-size: 1em;
+  color: rgba(255, 255, 255, 0.7);
+  margin: 2rem 0;
+}
+
+@media (max-width: 480px) {
+  h1 {
+    font-size: 2.5em;
+  }
+
+  .subtitle {
+    font-size: 1.2em;
+  }
+
+  .app-nav {
+    flex-direction: column;
+    padding: 0 1rem;
+  }
+
+  .nav-button {
+    width: 100%;
+    padding: 0.8rem;
+  }
+} 

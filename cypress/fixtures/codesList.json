@@ -1,0 +1,44 @@
+{
+  "success": true,
+  "data": {
+    "codes": [
+      {
+        "id": 1,
+        "code": "ABC123XY",
+        "prizeId": 1,
+        "prizeName": "Premio 1",
+        "isUsed": false,
+        "isExpired": false,
+        "createdAt": "2024-01-01T10:00:00Z",
+        "expiresAt": "2024-02-01T10:00:00Z"
+      },
+      {
+        "id": 2,
+        "code": "DEF456XY",
+        "prizeId": 2,
+        "prizeName": "Premio 2",
+        "isUsed": true,
+        "isExpired": false,
+        "createdAt": "2024-01-02T10:00:00Z",
+        "expiresAt": "2024-02-02T10:00:00Z",
+        "usedAt": "2024-01-15T15:30:00Z"
+      },
+      {
+        "id": 3,
+        "code": "GHI789XY",
+        "prizeId": 1,
+        "prizeName": "Premio 1",
+        "isUsed": false,
+        "isExpired": true,
+        "createdAt": "2023-12-01T10:00:00Z",
+        "expiresAt": "2024-01-01T10:00:00Z"
+      }
+    ],
+    "pagination": {
+      "currentPage": 1,
+      "totalPages": 5,
+      "totalItems": 50,
+      "itemsPerPage": 10
+    }
+  }
+}

@@ -1,0 +1,22 @@
+{
+  "success": true,
+  "data": {
+    "totalCodes": 100,
+    "usedCodes": 30,
+    "expiredCodes": 20,
+    "validCodes": 50,
+    "usageByDay": [
+      { "date": "2024-01-01", "count": 5 },
+      { "date": "2024-01-02", "count": 8 },
+      { "date": "2024-01-03", "count": 3 },
+      { "date": "2024-01-04", "count": 7 },
+      { "date": "2024-01-05", "count": 4 }
+    ],
+    "usageByPrize": [
+      { "prizeName": "Premio 1", "count": 15 },
+      { "prizeName": "Premio 2", "count": 10 },
+      { "prizeName": "Premio 3", "count": 5 }
+    ],
+    "timeRange": "week"
+  }
+}

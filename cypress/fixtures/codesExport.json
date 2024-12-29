@@ -1,0 +1,9 @@
+{
+  "success": true,
+  "data": {
+    "url": "http://localhost:3000/downloads/codes_export_2024-01-25.csv",
+    "filename": "codes_export_2024-01-25.csv",
+    "totalExported": 50,
+    "format": "csv"
+  }
+}

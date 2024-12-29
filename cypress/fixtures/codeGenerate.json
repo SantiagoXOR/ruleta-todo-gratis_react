@@ -1,0 +1,13 @@
+{
+  "success": true,
+  "data": {
+    "id": 101,
+    "code": "XYZ789AB",
+    "prizeId": 1,
+    "prizeName": "Premio 1",
+    "isUsed": false,
+    "isExpired": false,
+    "createdAt": "2024-01-25T12:00:00Z",
+    "expiresAt": "2024-02-25T12:00:00Z"
+  }
+}

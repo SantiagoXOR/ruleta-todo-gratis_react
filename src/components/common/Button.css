@@ -1,0 +1,221 @@
+.btn {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  border: none;
+  border-radius: 0.375rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease-in-out;
+  outline: none;
+}
+
+/* Variantes */
+.btn-primary {
+  background-color: var(--primary-color, #3b82f6);
+  color: white;
+}
+
+.btn-primary:hover:not(:disabled) {
+  background-color: var(--primary-color-dark, #2563eb);
+}
+
+.btn-secondary {
+  background-color: var(--secondary-color, #64748b);
+  color: white;
+}
+
+.btn-secondary:hover:not(:disabled) {
+  background-color: var(--secondary-color-dark, #475569);
+}
+
+.btn-outline {
+  background-color: transparent;
+  border: 2px solid var(--primary-color, #3b82f6);
+  color: var(--primary-color, #3b82f6);
+}
+
+.btn-outline:hover:not(:disabled) {
+  background-color: var(--primary-color, #3b82f6);
+  color: white;
+}
+
+.btn-text {
+  background-color: transparent;
+  color: var(--primary-color, #3b82f6);
+  padding: 0;
+}
+
+.btn-text:hover:not(:disabled) {
+  text-decoration: underline;
+}
+
+/* Tamaños */
+.btn-small {
+  padding: 0.5rem 1rem;
+  font-size: 0.875rem;
+}
+
+.btn-medium {
+  padding: 0.75rem 1.5rem;
+  font-size: 1rem;
+}
+
+.btn-large {
+  padding: 1rem 2rem;
+  font-size: 1.125rem;
+}
+
+/* Estados */
+.btn-disabled,
+.btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.btn-loading {
+  cursor: wait;
+}
+
+.btn-loading .btn-text,
+.btn-loading .btn-icon {
+  opacity: 0.7;
+}
+
+.btn-full-width {
+  width: 100%;
+}
+
+/* Spinner */
+.btn-spinner {
+  animation: spin 1s linear infinite;
+}
+
+.btn-spinner-circle {
+  stroke: currentColor;
+  stroke-linecap: round;
+  animation: dash 1.5s ease-in-out infinite;
+}
+
+/* Focus */
+.btn:focus-visible {
+  outline: 2px solid var(--primary-color, #3b82f6);
+  outline-offset: 2px;
+}
+
+/* Tooltip */
+.btn[data-tooltip] {
+  position: relative;
+}
+
+.btn[data-tooltip]:before {
+  content: attr(data-tooltip);
+  position: absolute;
+  background: rgba(0, 0, 0, 0.8);
+  color: white;
+  padding: 0.5rem;
+  border-radius: 0.25rem;
+  font-size: 0.875rem;
+  white-space: nowrap;
+  opacity: 0;
+  visibility: hidden;
+  transition: all 0.2s ease-in-out;
+}
+
+.btn[data-tooltip]:hover:before {
+  opacity: 1;
+  visibility: visible;
+}
+
+/* Posiciones del tooltip */
+.btn[data-tooltip][data-tooltip-position="top"]:before {
+  bottom: 100%;
+  left: 50%;
+  transform: translateX(-50%) translateY(-0.5rem);
+}
+
+.btn[data-tooltip][data-tooltip-position="bottom"]:before {
+  top: 100%;
+  left: 50%;
+  transform: translateX(-50%) translateY(0.5rem);
+}
+
+.btn[data-tooltip][data-tooltip-position="left"]:before {
+  right: 100%;
+  top: 50%;
+  transform: translateY(-50%) translateX(-0.5rem);
+}
+
+.btn[data-tooltip][data-tooltip-position="right"]:before {
+  left: 100%;
+  top: 50%;
+  transform: translateY(-50%) translateX(0.5rem);
+}
+
+/* Animaciones */
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes dash {
+  0% {
+    stroke-dasharray: 1, 150;
+    stroke-dashoffset: 0;
+  }
+  50% {
+    stroke-dasharray: 90, 150;
+    stroke-dashoffset: -35;
+  }
+  100% {
+    stroke-dasharray: 90, 150;
+    stroke-dashoffset: -124;
+  }
+}
+
+/* Reducción de movimiento */
+.reduced-motion {
+  transition: none !important;
+}
+
+.reduced-motion .btn-spinner {
+  animation: none !important;
+}
+
+.reduced-motion .btn-spinner-circle {
+  animation: none !important;
+}
+
+/* Alto contraste */
+.high-contrast .btn {
+  border: 2px solid currentColor;
+}
+
+.high-contrast .btn-primary {
+  background-color: black;
+  color: white;
+}
+
+.high-contrast .btn-secondary {
+  background-color: white;
+  color: black;
+}
+
+/* Tamaños de fuente */
+[data-font-size="small"] .btn {
+  font-size: 0.875rem;
+}
+
+[data-font-size="medium"] .btn {
+  font-size: 1rem;
+}
+
+[data-font-size="large"] .btn {
+  font-size: 1.25rem;
+}
