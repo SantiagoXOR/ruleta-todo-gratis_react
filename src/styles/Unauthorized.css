@@ -1,0 +1,105 @@
+.unauthorized-container {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;
+  background: linear-gradient(135deg, var(--background-color) 0%, var(--background-color-dark) 100%);
+}
+
+.unauthorized-content {
+  text-align: center;
+  padding: 3rem;
+  background: rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(10px);
+  border-radius: 16px;
+  max-width: 500px;
+  width: 100%;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+}
+
+.unauthorized-icon {
+  font-size: 4rem;
+  color: var(--secondary-color);
+  margin-bottom: 1.5rem;
+}
+
+.unauthorized-content h1 {
+  margin: 0 0 1rem 0;
+  font-size: 2rem;
+  color: var(--text-color);
+}
+
+.unauthorized-content p {
+  margin: 0 0 2rem 0;
+  color: var(--text-color-secondary);
+  font-size: 1.1rem;
+  line-height: 1.6;
+}
+
+.unauthorized-actions {
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+}
+
+.unauthorized-actions button {
+  padding: 1rem 2rem;
+  border: none;
+  border-radius: 8px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  transition: all 0.3s ease;
+}
+
+.unauthorized-actions .primary-button {
+  background: var(--secondary-color);
+  color: var(--background-color);
+}
+
+.unauthorized-actions .primary-button:hover {
+  background: var(--secondary-color-dark);
+  transform: translateY(-1px);
+}
+
+.unauthorized-actions .secondary-button {
+  background: rgba(255, 255, 255, 0.1);
+  color: var(--text-color);
+}
+
+.unauthorized-actions .secondary-button:hover {
+  background: rgba(255, 255, 255, 0.15);
+  transform: translateY(-1px);
+}
+
+/* Responsive Design */
+@media (max-width: 480px) {
+  .unauthorized-container {
+    padding: 1rem;
+  }
+
+  .unauthorized-content {
+    padding: 2rem;
+  }
+
+  .unauthorized-content h1 {
+    font-size: 1.5rem;
+  }
+
+  .unauthorized-content p {
+    font-size: 1rem;
+  }
+
+  .unauthorized-actions {
+    flex-direction: column;
+  }
+
+  .unauthorized-actions button {
+    width: 100%;
+    justify-content: center;
+  }
+} 

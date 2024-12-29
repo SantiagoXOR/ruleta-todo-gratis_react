@@ -1,8 +1,10 @@
-import React, { useState } from 'react';
+import React, { useState, useCallback } from 'react';
 import '../styles/Wheel.css';
 import confetti from 'canvas-confetti';
 import { Icons } from './Icons';
-import { Prize, ConfettiOptions, WheelProps } from '../types/wheel.types';
+import { Prize, PrizeWithCode, WheelProps } from '../types/wheel.types';
+import { uniqueCodeService } from '../services/uniqueCodeService';
+import { prizeService } from '../services/prizeService';
 
 const prizes: Prize[] = [
   {
@@ -55,78 +57,92 @@ const prizes: Prize[] = [
   }
 ];
 
-const generateCode = (): string => {
-  const chars = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ';
-  let code = '';
-  for (let i = 0; i < 3; i++) code += chars[Math.floor(Math.random() * chars.length)];
-  code += '-';
-  for (let i = 0; i < 2; i++) code += chars[Math.floor(Math.random() * chars.length)];
-  code += '-';
-  code += chars[Math.floor(Math.random() * chars.length)];
-  return code;
-};
-
 const Wheel: React.FC<WheelProps> = ({
   initialRotation = 0,
   spinDuration = 5000,
   minSpins = 5,
-  maxSpins = 8
+  maxSpins = 8,
+  onPrizeWon
 }) => {
-  const [isSpinning, setIsSpinning] = useState<boolean>(false);
-  const [rotation, setRotation] = useState<number>(initialRotation);
-  const [selectedPrize, setSelectedPrize] = useState<Prize | null>(null);
-  const [showPrize, setShowPrize] = useState<boolean>(false);
-  const [prizeCode, setPrizeCode] = useState<string>('');
+  const [isSpinning, setIsSpinning] = useState(false);
+  const [rotation, setRotation] = useState(initialRotation);
+  const [selectedPrize, setSelectedPrize] = useState<PrizeWithCode | null>(null);
+  const [showPrize, setShowPrize] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
-  const spinWheel = (): void => {
+  const generatePrizeCode = async (prize: Prize): Promise<PrizeWithCode | null> => {
+    try {
+      const response = await uniqueCodeService.generateCode(prize.id);
+      if (response.success && response.data) {
+        return {
+          ...prize,
+          code: response.data.code,
+          timestamp: Date.now(),
+          claimed: false,
+          expiresAt: new Date(response.data.expiresAt).getTime()
+        };
+      }
+      throw new Error('Error al generar el código del premio');
+    } catch (error) {
+      console.error('Error generating prize code:', error);
+      setError('Error al generar el código del premio. Por favor, intenta nuevamente.');
+      return null;
+    }
+  };
+
+  const handlePrizeWon = async (prize: Prize) => {
+    const prizeWithCode = await generatePrizeCode(prize);
+    if (prizeWithCode) {
+      setSelectedPrize(prizeWithCode);
+      setShowPrize(true);
+      if (onPrizeWon) {
+        onPrizeWon(prizeWithCode);
+      }
+      // Guardar el premio en el servicio
+      await prizeService.savePrize({
+        id: prizeWithCode.id,
+        name: prizeWithCode.name,
+        code: prizeWithCode.code
+      });
+    }
+  };
+
+  const spinWheel = useCallback(async () => {
     if (isSpinning) return;
 
     setIsSpinning(true);
     setShowPrize(false);
+    setError(null);
 
-    const randomSpins = Math.floor(Math.random() * (maxSpins - minSpins + 1) + minSpins);
-    const sectionSize = 360 / prizes.length;
-    const randomSection = Math.floor(Math.random() * prizes.length);
-    const randomOffset = Math.random() * (sectionSize * 0.8) - sectionSize * 0.4;
-    const finalRotation = rotation + (360 * randomSpins) + (randomSection * sectionSize) + randomOffset;
+    // Calcular rotación final
+    const numberOfSpins = Math.floor(Math.random() * (maxSpins - minSpins + 1)) + minSpins;
+    const extraDegrees = Math.floor(Math.random() * 360);
+    const totalRotation = numberOfSpins * 360 + extraDegrees;
+    
+    // Calcular el premio ganado basado en la rotación final
+    const normalizedDegree = extraDegrees % 360;
+    const prizeIndex = Math.floor(normalizedDegree / (360 / prizes.length));
+    const selectedPrize = prizes[prizes.length - 1 - prizeIndex];
 
-    setRotation(finalRotation);
+    setRotation(rotation + totalRotation);
 
-    setTimeout(() => {
+    // Esperar a que termine la animación
+    setTimeout(async () => {
       setIsSpinning(false);
-      setSelectedPrize(prizes[prizes.length - 1 - randomSection]);
-      setPrizeCode(generateCode());
-      setShowPrize(true);
-      launchConfetti();
-    }, spinDuration);
-  };
-
-  const launchConfetti = (): void => {
-    const count = 200;
-    const defaults: ConfettiOptions = {
-      origin: { y: 0.7 },
-      zIndex: 1500,
-      colors: ['#F4DE00', '#841468', '#FF6B6B', '#4ECDC4']
-    };
-
-    const fire = (particleRatio: number, opts: ConfettiOptions): void => {
+      await handlePrizeWon(selectedPrize);
+      
+      // Efectos de celebración
       confetti({
-        ...defaults,
-        ...opts,
-        particleCount: Math.floor(count * particleRatio)
+        particleCount: 100,
+        spread: 70,
+        origin: { y: 0.6 }
       });
-    };
-
-    fire(0.25, { spread: 26, startVelocity: 55 });
-    fire(0.2, { spread: 60 });
-    fire(0.35, { spread: 100, decay: 0.91, scalar: 0.8 });
-    fire(0.1, { spread: 120, startVelocity: 25, decay: 0.92, scalar: 1.2 });
-    fire(0.1, { spread: 120, startVelocity: 45 });
-  };
+    }, spinDuration);
+  }, [isSpinning, rotation, maxSpins, minSpins, spinDuration, onPrizeWon]);
 
   const shareOnWhatsApp = (): void => {
     if (!selectedPrize) return;
-    const text = `¡Gané ${selectedPrize.name} en PINTEMAS! 🎉\nMi código es: ${prizeCode}\nVálido por 24 horas`;
+    const text = `¡Gané ${selectedPrize.name} en PINTEMAS! 🎉\nMi código es: ${selectedPrize.code}\nVálido por 24 horas`;
     const url = `https://wa.me/?text=${encodeURIComponent(text)}`;
     window.open(url, '_blank');
   };
@@ -222,14 +238,20 @@ const Wheel: React.FC<WheelProps> = ({
         </div>
       </div>
 
+      {error && (
+        <div className="error-message">
+          {error}
+        </div>
+      )}
+
       {showPrize && selectedPrize && (
         <div className="prize-modal">
           <div className="prize-modal-content">
             <h2>¡FELICITACIONES!</h2>
             <p>¡Ganaste {selectedPrize.name}!</p>
-            <div className="prize-code">{prizeCode}</div>
+            <div className="prize-code">{selectedPrize.code}</div>
             <div className="prize-validity">
-              <Icons.Clock /> Válido por 24 horas
+              <Icons.Clock /> Válido hasta: {new Date(selectedPrize.expiresAt).toLocaleString()}
             </div>
             <button className="share-whatsapp" onClick={shareOnWhatsApp}>
               <Icons.Share /> COMPARTIR EN WHATSAPP

@@ -1,21 +1,21 @@
 import { ReactElement } from 'react';
 
 export interface Prize {
+  id: number;
   name: string;
   description: string;
-  icon: ReactElement;
   color: string;
+  textColor?: string;
+  probability?: number;
+  isSpecial?: boolean;
+  icon: React.ReactNode;
 }
 
-export interface ConfettiOptions {
-  origin?: { y: number };
-  zIndex?: number;
-  colors?: string[];
-  spread?: number;
-  startVelocity?: number;
-  particleCount?: number;
-  decay?: number;
-  scalar?: number;
+export interface PrizeWithCode extends Prize {
+  code: string;
+  timestamp: number;
+  claimed: boolean;
+  expiresAt: number;
 }
 
 export interface WheelProps {
@@ -23,4 +23,13 @@ export interface WheelProps {
   spinDuration?: number;
   minSpins?: number;
   maxSpins?: number;
+  onPrizeWon?: (prize: PrizeWithCode) => void;
+}
+
+export interface ConfettiOptions {
+  particleCount?: number;
+  spread?: number;
+  startVelocity?: number;
+  decay?: number;
+  scalar?: number;
 }
