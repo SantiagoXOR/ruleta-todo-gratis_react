@@ -6,6 +6,7 @@ export interface Prize {
   code: string;
   timestamp: number;
   claimed: boolean;
+  expiresAt: number;
 }
 
 const PRIZES_KEY = 'prizes';
@@ -13,19 +14,21 @@ const PRIZE_EXPIRY = 24 * 60 * 60 * 1000; // 24 horas en milisegundos
 
 class PrizeService {
   private getPrizes(): Prize[] {
-    return storage.get<Prize[]>(PRIZES_KEY) || [];
+    return storage.getItem<Prize[]>(PRIZES_KEY) || [];
   }
 
-  savePrize(prize: Omit<Prize, 'timestamp' | 'claimed'>): void {
+  async savePrize(prize: Omit<Prize, 'timestamp' | 'claimed' | 'expiresAt'>): Promise<Prize> {
     const prizes = this.getPrizes();
     const newPrize: Prize = {
       ...prize,
       timestamp: Date.now(),
-      claimed: false
+      claimed: false,
+      expiresAt: Date.now() + PRIZE_EXPIRY
     };
 
     prizes.push(newPrize);
-    storage.set(PRIZES_KEY, prizes, PRIZE_EXPIRY);
+    storage.setItem(PRIZES_KEY, prizes);
+    return newPrize;
   }
 
   getPrizeByCode(code: string): Prize | null {
@@ -40,64 +43,50 @@ class PrizeService {
     if (prizeIndex === -1) return false;
     
     prizes[prizeIndex].claimed = true;
-    storage.set(PRIZES_KEY, prizes, PRIZE_EXPIRY);
+    storage.setItem(PRIZES_KEY, prizes);
     return true;
   }
 
-  isPrizeValid(code: string): boolean {
-    const prize = this.getPrizeByCode(code);
+  isPrizeValid(prize: Prize): boolean {
     if (!prize) return false;
 
     const now = Date.now();
-    const prizeAge = now - prize.timestamp;
-
-    return !prize.claimed && prizeAge < PRIZE_EXPIRY;
+    return !prize.claimed && now < prize.expiresAt;
   }
 
-  getTimeToExpiry(code: string): number | null {
-    const prize = this.getPrizeByCode(code);
+  getTimeToExpiry(prize: Prize): number | null {
     if (!prize) return null;
 
     const now = Date.now();
-    const expirationTime = prize.timestamp + PRIZE_EXPIRY;
-    const timeLeft = expirationTime - now;
+    const timeLeft = prize.expiresAt - now;
 
     return timeLeft > 0 ? timeLeft : null;
   }
 
-  getActivePrizes(): Prize[] {
+  async getActivePrizes(): Promise<Prize[]> {
     const now = Date.now();
-    return this.getPrizes().filter(prize => {
-      const prizeAge = now - prize.timestamp;
-      return !prize.claimed && prizeAge < PRIZE_EXPIRY;
-    });
+    return this.getPrizes().filter(prize => !prize.claimed && now < prize.expiresAt);
   }
 
-  getAvailablePrizes(): Prize[] {
+  async getAvailablePrizes(): Promise<Prize[]> {
     return this.getActivePrizes();
   }
 
-  getClaimedPrizes(): Prize[] {
+  async getClaimedPrizes(): Promise<Prize[]> {
     return this.getPrizes().filter(prize => prize.claimed);
   }
 
-  getExpiredPrizes(): Prize[] {
+  async getExpiredPrizes(): Promise<Prize[]> {
     const now = Date.now();
-    return this.getPrizes().filter(prize => {
-      const prizeAge = now - prize.timestamp;
-      return !prize.claimed && prizeAge >= PRIZE_EXPIRY;
-    });
+    return this.getPrizes().filter(prize => !prize.claimed && now >= prize.expiresAt);
   }
 
   clearExpiredPrizes(): void {
     const prizes = this.getPrizes();
     const now = Date.now();
-    const validPrizes = prizes.filter(prize => {
-      const prizeAge = now - prize.timestamp;
-      return prize.claimed || prizeAge < PRIZE_EXPIRY;
-    });
+    const validPrizes = prizes.filter(prize => prize.claimed || now < prize.expiresAt);
 
-    storage.set(PRIZES_KEY, validPrizes, PRIZE_EXPIRY);
+    storage.setItem(PRIZES_KEY, validPrizes);
   }
 }
 

@@ -1,13 +1,19 @@
 import { cacheService } from './cacheService';
-import { UniqueCode } from '../types/uniqueCodes.types';
+import { 
+  UniqueCode, 
+  CodeStatistics, 
+  ListCodesResponse, 
+  StatisticsResponse,
+  ExportResponse 
+} from '../types/uniqueCodes.types';
 
-interface ListCodesOptions {
+export interface ListCodesOptions {
   page?: number;
   prizeId?: number;
   isUsed?: boolean;
 }
 
-interface ExportOptions {
+export interface ExportOptions {
   format: 'csv' | 'excel';
   dateRange: 'all' | 'week' | 'month' | 'year';
   includeUsed: boolean;
@@ -15,7 +21,7 @@ interface ExportOptions {
   prizeId?: number;
 }
 
-class UniqueCodeService {
+export class UniqueCodeService {
   private readonly API_BASE = '/api/codes';
   private readonly CACHE_KEYS = {
     STATS: 'code_stats',
@@ -28,8 +34,21 @@ class UniqueCodeService {
    * @param prizeId ID del premio
    * @returns Respuesta con el código generado
    */
-  async generateCode(prizeId: number) {
+  async generateCode(prizeId: number): Promise<{ success: boolean; data?: UniqueCode; error?: string }> {
     try {
+      // Simular generación de código en desarrollo
+      if (process.env.NODE_ENV === 'development') {
+        const code = `TEST${Math.random().toString(36).substring(2, 8).toUpperCase()}`;
+        const data: UniqueCode = {
+          code,
+          prizeId,
+          timestamp: Date.now(),
+          expiresAt: Date.now() + 24 * 60 * 60 * 1000, // 24 horas
+          isUsed: false
+        };
+        return { success: true, data };
+      }
+
       const response = await fetch(`${this.API_BASE}/generate`, {
         method: 'POST',
         headers: {
@@ -43,9 +62,25 @@ class UniqueCodeService {
       // Invalidar caché relacionado
       this.invalidateRelatedCache(prizeId);
       
-      return data;
+      return {
+        success: response.ok,
+        data: response.ok ? data : undefined,
+        error: !response.ok ? data.error || 'Error al generar código' : undefined
+      };
     } catch (error) {
       console.error('Error generating code:', error);
+      // En desarrollo, generar un código de prueba incluso si hay error
+      if (process.env.NODE_ENV === 'development') {
+        const code = `TEST${Math.random().toString(36).substring(2, 8).toUpperCase()}`;
+        const data: UniqueCode = {
+          code,
+          prizeId,
+          timestamp: Date.now(),
+          expiresAt: Date.now() + 24 * 60 * 60 * 1000, // 24 horas
+          isUsed: false
+        };
+        return { success: true, data };
+      }
       return { success: false, error: 'Error al generar código' };
     }
   }
@@ -59,6 +94,12 @@ class UniqueCodeService {
     const cacheKey = `${this.CACHE_KEYS.DETAILS}_${code}`;
     
     try {
+      // En desarrollo, simular validación
+      if (process.env.NODE_ENV === 'development') {
+        const isValid = code.startsWith('TEST');
+        return { success: true, data: { isValid, code } };
+      }
+
       return await cacheService.getOrGenerate(
         cacheKey,
         async () => {
@@ -69,6 +110,11 @@ class UniqueCodeService {
       );
     } catch (error) {
       console.error('Error validating code:', error);
+      // En desarrollo, retornar validación simulada
+      if (process.env.NODE_ENV === 'development') {
+        const isValid = code.startsWith('TEST');
+        return { success: true, data: { isValid, code } };
+      }
       return { success: false, error: 'Error al validar código' };
     }
   }
@@ -81,6 +127,11 @@ class UniqueCodeService {
    */
   async useCode(code: string, userId: string) {
     try {
+      // En desarrollo, simular uso de código
+      if (process.env.NODE_ENV === 'development') {
+        return { success: true, data: { code, userId } };
+      }
+
       const response = await fetch(`${this.API_BASE}/${code}/use`, {
         method: 'POST',
         headers: {
@@ -99,6 +150,10 @@ class UniqueCodeService {
       return data;
     } catch (error) {
       console.error('Error using code:', error);
+      // En desarrollo, retornar éxito simulado
+      if (process.env.NODE_ENV === 'development') {
+        return { success: true, data: { code, userId } };
+      }
       return { success: false, error: 'Error al usar código' };
     }
   }
@@ -108,10 +163,32 @@ class UniqueCodeService {
    * @param options Opciones de filtrado
    * @returns Lista de códigos
    */
-  async listCodes(options: ListCodesOptions = {}) {
+  async listCodes(options: ListCodesOptions = {}): Promise<ListCodesResponse> {
     const cacheKey = `${this.CACHE_KEYS.LIST}_${JSON.stringify(options)}`;
     
     try {
+      // En desarrollo, retornar lista simulada
+      if (process.env.NODE_ENV === 'development') {
+        const codes = Array.from({ length: 10 }, (_, i) => ({
+          code: `TEST${i}`,
+          prizeId: options.prizeId || 1,
+          timestamp: Date.now() - i * 1000,
+          expiresAt: Date.now() + 24 * 60 * 60 * 1000,
+          isUsed: false
+        }));
+        return {
+          success: true,
+          data: {
+            codes,
+            pagination: {
+              page: options.page || 1,
+              totalPages: 1,
+              totalItems: codes.length
+            }
+          }
+        };
+      }
+
       return await cacheService.getOrGenerate(
         cacheKey,
         async () => {
@@ -121,12 +198,42 @@ class UniqueCodeService {
           if (typeof options.isUsed === 'boolean') queryParams.set('isUsed', options.isUsed.toString());
 
           const response = await fetch(`${this.API_BASE}?${queryParams}`);
-          return response.json();
+          const data = await response.json();
+
+          return {
+            success: response.ok,
+            data: response.ok ? {
+              codes: data.codes,
+              pagination: data.pagination
+            } : undefined,
+            error: !response.ok ? data.error || 'Error al listar códigos' : undefined
+          };
         },
         60000 // 1 minuto de caché para listas
       );
     } catch (error) {
       console.error('Error listing codes:', error);
+      // En desarrollo, retornar lista simulada incluso si hay error
+      if (process.env.NODE_ENV === 'development') {
+        const codes = Array.from({ length: 10 }, (_, i) => ({
+          code: `TEST${i}`,
+          prizeId: options.prizeId || 1,
+          timestamp: Date.now() - i * 1000,
+          expiresAt: Date.now() + 24 * 60 * 60 * 1000,
+          isUsed: false
+        }));
+        return {
+          success: true,
+          data: {
+            codes,
+            pagination: {
+              page: options.page || 1,
+              totalPages: 1,
+              totalItems: codes.length
+            }
+          }
+        };
+      }
       return { success: false, error: 'Error al listar códigos' };
     }
   }
@@ -136,42 +243,105 @@ class UniqueCodeService {
    * @param timeRange Rango de tiempo
    * @returns Estadísticas
    */
-  async getStatistics(timeRange: 'week' | 'month' | 'year') {
+  async getStatistics(timeRange: 'week' | 'month' | 'year'): Promise<StatisticsResponse> {
     const cacheKey = `${this.CACHE_KEYS.STATS}_${timeRange}`;
     
     try {
+      // En desarrollo, retornar estadísticas simuladas
+      if (process.env.NODE_ENV === 'development') {
+        return {
+          success: true,
+          data: {
+            total: 100,
+            used: 50,
+            expired: 10,
+            active: 40,
+            timeRange
+          }
+        };
+      }
+
       return await cacheService.getOrGenerate(
         cacheKey,
         async () => {
           const response = await fetch(`${this.API_BASE}/statistics?timeRange=${timeRange}`);
-          return response.json();
+          const data = await response.json();
+
+          return {
+            success: response.ok,
+            data: response.ok ? data : undefined,
+            error: !response.ok ? data.error || 'Error al obtener estadísticas' : undefined
+          };
         },
         300000 // 5 minutos de caché para estadísticas
       );
     } catch (error) {
       console.error('Error getting statistics:', error);
+      // En desarrollo, retornar estadísticas simuladas incluso si hay error
+      if (process.env.NODE_ENV === 'development') {
+        return {
+          success: true,
+          data: {
+            total: 100,
+            used: 50,
+            expired: 10,
+            active: 40,
+            timeRange
+          }
+        };
+      }
       return { success: false, error: 'Error al obtener estadísticas' };
     }
   }
 
   /**
-   * Exporta códigos
+   * Exporta códigos según las opciones especificadas
    * @param options Opciones de exportación
-   * @returns Datos exportados
+   * @returns Respuesta con la URL y nombre del archivo exportado
    */
-  async exportCodes(options: ExportOptions) {
+  async exportCodes(options: ExportOptions): Promise<ExportResponse> {
     try {
-      const response = await fetch(`${this.API_BASE}/export`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(options),
-      });
+      // En desarrollo, simular exportación
+      if (process.env.NODE_ENV === 'development') {
+        return {
+          success: true,
+          data: {
+            url: 'data:text/csv;base64,Q09ESUdPLEZFQ0hBLEVTVEFETw==',
+            filename: `codigos_${Date.now()}.${options.format}`
+          }
+        };
+      }
 
-      return response.json();
+      const queryParams = new URLSearchParams();
+      queryParams.set('format', options.format);
+      queryParams.set('dateRange', options.dateRange);
+      queryParams.set('includeUsed', options.includeUsed.toString());
+      queryParams.set('includeExpired', options.includeExpired.toString());
+      if (options.prizeId) queryParams.set('prizeId', options.prizeId.toString());
+
+      const response = await fetch(`${this.API_BASE}/export?${queryParams}`);
+      const data = await response.json();
+
+      return {
+        success: response.ok,
+        data: response.ok ? {
+          url: data.url,
+          filename: data.filename
+        } : undefined,
+        error: !response.ok ? data.error || 'Error al exportar códigos' : undefined
+      };
     } catch (error) {
       console.error('Error exporting codes:', error);
+      // En desarrollo, retornar exportación simulada incluso si hay error
+      if (process.env.NODE_ENV === 'development') {
+        return {
+          success: true,
+          data: {
+            url: 'data:text/csv;base64,Q09ESUdPLEZFQ0hBLEVTVEFETw==',
+            filename: `codigos_${Date.now()}.${options.format}`
+          }
+        };
+      }
       return { success: false, error: 'Error al exportar códigos' };
     }
   }
@@ -196,3 +366,5 @@ class UniqueCodeService {
 }
 
 export const uniqueCodeService = new UniqueCodeService();
+export type { UniqueCode };
+export default uniqueCodeService;

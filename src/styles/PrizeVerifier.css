@@ -1,55 +1,193 @@
 .prize-verifier {
-  background-color: rgba(255, 255, 255, 0.1);
-  padding: 2rem;
-  border-radius: var(--border-radius);
-  margin: 2rem 0;
+  max-width: 800px;
+  margin: 0 auto;
+  padding: var(--spacing-xl);
+  background-color: white;
+  border-radius: var(--border-radius-lg);
+  box-shadow: var(--shadow-md);
+}
+
+.prize-verifier h2 {
+  color: var(--text-primary);
+  margin-bottom: var(--spacing-lg);
+  text-align: center;
+  font-size: var(--font-size-xl);
 }
 
 .verifier-container {
   display: flex;
-  gap: 1rem;
-  justify-content: center;
-  margin-bottom: 1rem;
+  flex-direction: column;
+  gap: var(--spacing-md);
 }
 
 .code-input {
-  padding: 0.8rem 1rem;
-  font-size: 1rem;
-  border: 2px solid var(--primary-color);
-  border-radius: var(--border-radius);
-  background-color: transparent;
-  color: var(--text-color);
-  width: 300px;
+  width: 100%;
+  padding: var(--spacing-md);
+  font-size: var(--font-size-lg);
+  border: 2px solid var(--border-color);
+  border-radius: var(--border-radius-md);
+  text-align: center;
+  letter-spacing: 2px;
+  transition: border-color var(--transition-fast), box-shadow var(--transition-fast);
 }
 
 .code-input:focus {
   outline: none;
-  border-color: var(--secondary-color);
+  border-color: var(--primary-color);
+  box-shadow: 0 0 0 3px rgba(132, 20, 104, 0.1);
+}
+
+.code-input[aria-invalid="true"] {
+  border-color: var(--error-color);
 }
 
 .verify-button {
+  width: 100%;
+  padding: var(--spacing-md);
   background-color: var(--primary-color);
   color: white;
+  border: none;
+  border-radius: var(--border-radius-md);
+  font-size: var(--font-size-md);
+  font-weight: var(--font-weight-semibold);
+  cursor: pointer;
+  transition: background-color var(--transition-fast), transform var(--transition-fast);
 }
 
 .verify-button:hover:not(:disabled) {
-  background-color: var(--secondary-color);
+  background-color: var(--primary-color-dark);
+  transform: translateY(-1px);
 }
 
-.message {
-  margin-top: 1rem;
-  font-size: 1.1rem;
-  color: var(--text-color);
+.verify-button:active:not(:disabled) {
+  transform: translateY(0);
+}
+
+.verify-button:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+.error-message {
+  padding: var(--spacing-md);
+  background-color: rgba(255, 82, 82, 0.1);
+  border: 1px solid var(--error-color);
+  border-radius: var(--border-radius-md);
+  color: var(--error-color);
+  font-size: var(--font-size-sm);
+  text-align: center;
+  animation: fadeIn var(--transition-fast);
+}
+
+.success-message {
+  padding: var(--spacing-md);
+  background-color: rgba(46, 213, 115, 0.1);
+  border: 1px solid var(--success-color);
+  border-radius: var(--border-radius-md);
+  color: var(--success-color);
+  font-size: var(--font-size-sm);
+  text-align: center;
+  animation: fadeIn var(--transition-fast);
+}
+
+.prize-info {
+  margin-top: var(--spacing-lg);
+  padding: var(--spacing-lg);
+  background-color: var(--background-color);
+  border-radius: var(--border-radius-md);
+  animation: slideIn var(--transition-normal);
+}
+
+.prize-info h3 {
+  color: var(--text-primary);
+  margin-bottom: var(--spacing-md);
+  font-size: var(--font-size-lg);
+}
+
+.prize-info dl {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: var(--spacing-sm) var(--spacing-md);
+  margin: 0;
+}
+
+.prize-info dt {
+  color: var(--text-secondary);
+  font-weight: var(--font-weight-medium);
+}
+
+.prize-info dd {
+  margin: 0;
+  color: var(--text-primary);
+  font-weight: var(--font-weight-semibold);
+}
+
+.claim-button {
+  width: 100%;
+  margin-top: var(--spacing-lg);
+  padding: var(--spacing-md);
+  background-color: var(--success-color);
+  color: white;
+  border: none;
+  border-radius: var(--border-radius-md);
+  font-size: var(--font-size-md);
+  font-weight: var(--font-weight-semibold);
+  cursor: pointer;
+  transition: background-color var(--transition-fast), transform var(--transition-fast);
+}
+
+.claim-button:hover:not(:disabled) {
+  background-color: #26b863;
+  transform: translateY(-1px);
+}
+
+.claim-button:active:not(:disabled) {
+  transform: translateY(0);
+}
+
+.claim-button:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 @media (max-width: 768px) {
-  .verifier-container {
-    flex-direction: column;
-    align-items: center;
+  .prize-verifier {
+    padding: var(--spacing-lg);
+  }
+}
+
+@media (max-width: 480px) {
+  .prize-verifier {
+    padding: var(--spacing-md);
   }
 
-  .code-input {
-    width: 100%;
-    max-width: 300px;
+  .prize-info dl {
+    grid-template-columns: 1fr;
+    gap: var(--spacing-xs);
+  }
+
+  .prize-info dt {
+    color: var(--text-primary);
+    margin-top: var(--spacing-sm);
   }
 } 

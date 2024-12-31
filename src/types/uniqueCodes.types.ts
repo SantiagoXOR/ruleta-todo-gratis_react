@@ -1,28 +1,50 @@
 export interface UniqueCode {
   code: string;
   prizeId: number;
-  createdAt: number;
+  timestamp: number;
   expiresAt: number;
   isUsed: boolean;
-  usedAt?: number;
-  usedBy?: string;
 }
 
-export interface GenerateCodeResponse {
+export interface CodeStatistics {
+  total: number;
+  used: number;
+  expired: number;
+  active: number;
+}
+
+export interface ListCodesResponse {
   success: boolean;
-  data?: UniqueCode;
+  data?: {
+    codes: UniqueCode[];
+    pagination: {
+      page: number;
+      totalPages: number;
+      totalItems: number;
+    };
+  };
   error?: string;
 }
 
-export interface ValidateCodeResponse {
+export interface StatisticsResponse {
   success: boolean;
-  isValid: boolean;
-  code?: UniqueCode;
+  data?: CodeStatistics;
   error?: string;
 }
 
-export interface UseCodeResponse {
+export interface ExportResponse {
   success: boolean;
-  code?: UniqueCode;
+  data?: {
+    url: string;
+    filename: string;
+  };
   error?: string;
+}
+
+export interface ExportOptions {
+  format: 'csv' | 'excel';
+  dateRange: 'all' | 'week' | 'month' | 'year';
+  includeUsed: boolean;
+  includeExpired: boolean;
+  prizeId?: number;
 }

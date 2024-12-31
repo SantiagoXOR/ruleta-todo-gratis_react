@@ -1,28 +1,31 @@
 import React, { useState, useEffect } from 'react';
-import { notificationService, Notification, NotificationConfig } from '../services/notificationService';
+import { useNavigate } from 'react-router-dom';
+import { notificationService, Notification, NotificationPreferences } from '../services/notificationService';
+import { securityService } from '../services/securityService';
 import { Icons } from './Icons';
 import '../styles/NotificationCenter.css';
 
-interface NotificationCenterProps {
-  onClose?: () => void;
-}
-
-const NotificationCenter: React.FC<NotificationCenterProps> = ({ onClose }) => {
+const NotificationCenter: React.FC = () => {
+  const navigate = useNavigate();
   const [notifications, setNotifications] = useState<Notification[]>([]);
-  const [config, setConfig] = useState<NotificationConfig | null>(null);
-  const [showConfig, setShowConfig] = useState(false);
+  const [preferences, setPreferences] = useState<NotificationPreferences | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [showPreferences, setShowPreferences] = useState(false);
+  const [pushSupported] = useState('PushManager' in window);
 
   useEffect(() => {
     loadNotifications();
-    loadConfig();
+    loadPreferences();
   }, []);
 
   const loadNotifications = async () => {
     try {
-      const unreadNotifications = await notificationService.getUnreadNotifications();
-      setNotifications(unreadNotifications);
+      const currentUser = securityService.getCurrentUser();
+      if (!currentUser) return;
+
+      const data = await notificationService.getNotifications(currentUser.id);
+      setNotifications(data);
     } catch (error) {
       setError('Error al cargar las notificaciones');
     } finally {
@@ -30,91 +33,191 @@ const NotificationCenter: React.FC<NotificationCenterProps> = ({ onClose }) => {
     }
   };
 
-  const loadConfig = async () => {
+  const loadPreferences = async () => {
     try {
-      const config = await notificationService.getNotificationConfig();
-      setConfig(config);
+      const currentUser = securityService.getCurrentUser();
+      if (!currentUser) return;
+
+      const data = await notificationService.getPreferences(currentUser.id);
+      setPreferences(data);
     } catch (error) {
-      setError('Error al cargar la configuración');
+      setError('Error al cargar las preferencias');
     }
   };
 
   const handleMarkAsRead = async (notificationId: string) => {
     try {
       await notificationService.markAsRead(notificationId);
-      setNotifications(prev => 
-        prev.map(n => n.id === notificationId ? { ...n, read: true } : n)
-      );
+      setNotifications(notifications.map(notification =>
+        notification.id === notificationId
+          ? { ...notification, read: true }
+          : notification
+      ));
     } catch (error) {
-      setError('Error al marcar como leída');
+      setError('Error al marcar la notificación como leída');
     }
   };
 
   const handleDelete = async (notificationId: string) => {
     try {
       await notificationService.deleteNotification(notificationId);
-      setNotifications(prev => prev.filter(n => n.id !== notificationId));
+      setNotifications(notifications.filter(n => n.id !== notificationId));
     } catch (error) {
       setError('Error al eliminar la notificación');
     }
   };
 
-  const handleUpdateConfig = async (changes: Partial<NotificationConfig>) => {
-    if (!config) return;
-
+  const handleUpdatePreferences = async (updates: Partial<NotificationPreferences>) => {
     try {
-      await notificationService.updateNotificationConfig(changes);
-      setConfig(prev => prev ? { ...prev, ...changes } : null);
+      const currentUser = securityService.getCurrentUser();
+      if (!currentUser) return;
+
+      await notificationService.updatePreferences(currentUser.id, updates);
+      setPreferences(prev => prev ? { ...prev, ...updates } : null);
     } catch (error) {
-      setError('Error al actualizar la configuración');
+      setError('Error al actualizar las preferencias');
     }
   };
 
-  const handleRequestPushPermission = async () => {
-    const granted = await notificationService.requestPushPermission();
-    if (granted && config) {
-      handleUpdateConfig({ enablePushNotifications: true });
+  const handlePushToggle = async () => {
+    if (!preferences) return;
+
+    try {
+      if (preferences.push) {
+        await notificationService.unsubscribeFromWebPush();
+      } else {
+        await notificationService.subscribeToWebPush();
+      }
+      
+      await handleUpdatePreferences({ push: !preferences.push });
+    } catch (error) {
+      setError('Error al actualizar la suscripción de notificaciones push');
+    }
+  };
+
+  const handleNotificationClick = (notification: Notification) => {
+    if (notification.data?.url) {
+      navigate(notification.data.url);
+    }
+    if (!notification.read) {
+      handleMarkAsRead(notification.id);
     }
   };
 
   const renderNotification = (notification: Notification) => (
-    <div 
-      key={notification.id} 
-      className={`notification-item ${notification.read ? 'read' : ''} ${notification.priority}`}
+    <div
+      key={notification.id}
+      className={`notification-item ${notification.read ? 'read' : ''}`}
+      onClick={() => handleNotificationClick(notification)}
     >
       <div className="notification-icon">
-        {notification.type === 'expiration' && <Icons.Clock />}
-        {notification.type === 'claim' && <Icons.Check />}
+        {notification.type === 'prize_expiring' && <Icons.Clock />}
+        {notification.type === 'prize_won' && <Icons.Gift />}
         {notification.type === 'system' && <Icons.Info />}
+        {notification.type === 'custom' && <Icons.Bell />}
       </div>
 
       <div className="notification-content">
-        <h4>{notification.title}</h4>
-        <p>{notification.message}</p>
-        <div className="notification-meta">
+        <div className="notification-header">
+          <h4>{notification.title}</h4>
           <span className="notification-time">
             {new Date(notification.timestamp).toLocaleString()}
           </span>
         </div>
+        <p>{notification.message}</p>
       </div>
 
       <div className="notification-actions">
         {!notification.read && (
           <button
-            className="action-button"
-            onClick={() => handleMarkAsRead(notification.id)}
+            className="icon-button"
+            onClick={(e) => {
+              e.stopPropagation();
+              handleMarkAsRead(notification.id);
+            }}
             title="Marcar como leída"
           >
             <Icons.Check />
           </button>
         )}
         <button
-          className="action-button delete"
-          onClick={() => handleDelete(notification.id)}
+          className="icon-button danger"
+          onClick={(e) => {
+            e.stopPropagation();
+            handleDelete(notification.id);
+          }}
           title="Eliminar"
         >
-          <Icons.Delete />
+          <Icons.Trash />
         </button>
+      </div>
+    </div>
+  );
+
+  const renderPreferences = () => (
+    <div className="preferences-panel">
+      <h3>Preferencias de Notificaciones</h3>
+
+      <div className="preferences-group">
+        <h4>Canales de Notificación</h4>
+        <label className="preference-item">
+          <span>Notificaciones en la aplicación</span>
+          <input
+            type="checkbox"
+            checked={preferences?.inApp}
+            onChange={(e) => handleUpdatePreferences({ inApp: e.target.checked })}
+          />
+        </label>
+
+        <label className="preference-item">
+          <span>Notificaciones por email</span>
+          <input
+            type="checkbox"
+            checked={preferences?.email}
+            onChange={(e) => handleUpdatePreferences({ email: e.target.checked })}
+          />
+        </label>
+
+        {pushSupported && (
+          <label className="preference-item">
+            <span>Notificaciones push</span>
+            <input
+              type="checkbox"
+              checked={preferences?.push}
+              onChange={handlePushToggle}
+            />
+          </label>
+        )}
+      </div>
+
+      <div className="preferences-group">
+        <h4>Tipos de Notificación</h4>
+        <label className="preference-item">
+          <span>Premios próximos a vencer</span>
+          <input
+            type="checkbox"
+            checked={preferences?.prizeExpiring}
+            onChange={(e) => handleUpdatePreferences({ prizeExpiring: e.target.checked })}
+          />
+        </label>
+
+        <label className="preference-item">
+          <span>Premios ganados</span>
+          <input
+            type="checkbox"
+            checked={preferences?.prizeWon}
+            onChange={(e) => handleUpdatePreferences({ prizeWon: e.target.checked })}
+          />
+        </label>
+
+        <label className="preference-item">
+          <span>Actualizaciones del sistema</span>
+          <input
+            type="checkbox"
+            checked={preferences?.systemUpdates}
+            onChange={(e) => handleUpdatePreferences({ systemUpdates: e.target.checked })}
+          />
+        </label>
       </div>
     </div>
   );
@@ -122,127 +225,47 @@ const NotificationCenter: React.FC<NotificationCenterProps> = ({ onClose }) => {
   return (
     <div className="notification-center">
       <div className="notification-header">
-        <h3>
-          <Icons.Bell /> Notificaciones
-          {notifications.length > 0 && (
-            <span className="notification-count">{notifications.length}</span>
-          )}
-        </h3>
+        <h2>
+          <Icons.Bell />
+          Notificaciones
+        </h2>
         <div className="header-actions">
           <button
-            className="config-button"
-            onClick={() => setShowConfig(!showConfig)}
-            title="Configuración"
+            className="text-button"
+            onClick={() => setShowPreferences(!showPreferences)}
           >
             <Icons.Settings />
+            Preferencias
           </button>
-          {onClose && (
-            <button className="close-button" onClick={onClose}>
-              <Icons.Close />
-            </button>
-          )}
         </div>
       </div>
 
       {error && (
-        <div className="notification-error">
-          <Icons.Error /> {error}
+        <div className="error-message">
+          <Icons.Error />
+          {error}
         </div>
       )}
 
-      {showConfig && config && (
-        <div className="notification-config">
-          <h4>Configuración de Notificaciones</h4>
-          
-          <div className="config-group">
-            <label>
-              <input
-                type="checkbox"
-                checked={config.enableEmailNotifications}
-                onChange={(e) => handleUpdateConfig({
-                  enableEmailNotifications: e.target.checked
-                })}
-              />
-              Notificaciones por email
-            </label>
-
-            <label>
-              <input
-                type="checkbox"
-                checked={config.enablePushNotifications}
-                onChange={(e) => {
-                  if (e.target.checked) {
-                    handleRequestPushPermission();
-                  } else {
-                    handleUpdateConfig({ enablePushNotifications: false });
-                  }
-                }}
-              />
-              Notificaciones push
-            </label>
-          </div>
-
-          <div className="config-group">
-            <label>Días de advertencia antes del vencimiento:</label>
-            <input
-              type="number"
-              min="1"
-              max="30"
-              value={config.expirationWarningDays}
-              onChange={(e) => handleUpdateConfig({
-                expirationWarningDays: parseInt(e.target.value)
-              })}
-            />
-          </div>
-
-          <div className="config-group">
-            <label>Frecuencia de notificaciones:</label>
-            <select
-              value={config.notificationFrequency}
-              onChange={(e) => handleUpdateConfig({
-                notificationFrequency: e.target.value as NotificationConfig['notificationFrequency']
-              })}
-            >
-              <option value="daily">Diaria</option>
-              <option value="weekly">Semanal</option>
-              <option value="custom">Personalizada</option>
-            </select>
-
-            {config.notificationFrequency === 'custom' && (
-              <div className="custom-frequency">
-                <label>Horas entre notificaciones:</label>
-                <input
-                  type="number"
-                  min="1"
-                  max="168"
-                  value={config.customFrequencyHours ?? 24}
-                  onChange={(e) => handleUpdateConfig({
-                    customFrequencyHours: parseInt(e.target.value)
-                  })}
-                />
-              </div>
-            )}
-          </div>
+      {showPreferences ? (
+        renderPreferences()
+      ) : (
+        <div className="notifications-list">
+          {loading ? (
+            <div className="loading-state">
+              <Icons.Spinner className="spin" />
+              Cargando notificaciones...
+            </div>
+          ) : notifications.length > 0 ? (
+            notifications.map(renderNotification)
+          ) : (
+            <div className="empty-state">
+              <Icons.Inbox />
+              <p>No tienes notificaciones</p>
+            </div>
+          )}
         </div>
       )}
-
-      <div className="notifications-list">
-        {loading ? (
-          <div className="loading-state">
-            <span className="loading-spinner">
-              <Icons.Spinner />
-            </span>
-            Cargando notificaciones...
-          </div>
-        ) : notifications.length > 0 ? (
-          notifications.map(renderNotification)
-        ) : (
-          <div className="empty-state">
-            <Icons.Empty />
-            <p>No hay notificaciones nuevas</p>
-          </div>
-        )}
-      </div>
     </div>
   );
 };

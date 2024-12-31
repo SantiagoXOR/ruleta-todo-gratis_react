@@ -1,96 +1,118 @@
-import { useCallback, useEffect, useRef } from 'react';
-
-interface SoundMap {
-  [key: string]: HTMLAudioElement;
-}
+import { useRef, useCallback, useEffect } from 'react';
 
 interface SoundConfig {
+  src: string;
   volume?: number;
   loop?: boolean;
 }
 
-export const useSound = () => {
-  const soundsRef = useRef<SoundMap>({});
-  const currentlyPlayingRef = useRef<Set<string>>(new Set());
+type SoundMap = {
+  [key: string]: SoundConfig;
+};
 
+const DEFAULT_SOUNDS: SoundMap = {
+  spin: {
+    src: '/sounds/spin.mp3',
+    volume: 0.7
+  },
+  win: {
+    src: '/sounds/win.mp3',
+    volume: 0.8
+  },
+  click: {
+    src: '/sounds/click.mp3',
+    volume: 0.5
+  },
+  error: {
+    src: '/sounds/error.mp3',
+    volume: 0.6
+  }
+};
+
+export const useSound = (customSounds?: SoundMap) => {
+  const audioMap = useRef<Map<string, HTMLAudioElement>>(new Map());
+  const isEnabled = useRef<boolean>(true);
+
+  // Cargar y cachear los sonidos
   useEffect(() => {
-    // Precarga los sonidos con configuraciones específicas
-    const soundConfigs: { [key: string]: SoundConfig } = {
-      spin: { volume: 0.4, loop: true },
-      win: { volume: 0.6 },
-      click: { volume: 0.3 },
-      error: { volume: 0.4 },
-      hover: { volume: 0.2 },
-      success: { volume: 0.5 }
-    };
+    const sounds = { ...DEFAULT_SOUNDS, ...customSounds };
 
-    // Crear y configurar los sonidos
-    soundsRef.current = {
-      spin: new Audio('/sounds/spin.mp3'),
-      win: new Audio('/sounds/win.mp3'),
-      click: new Audio('/sounds/click.mp3'),
-      error: new Audio('/sounds/error.mp3'),
-      hover: new Audio('/sounds/hover.mp3'),
-      success: new Audio('/sounds/success.mp3')
-    };
-
-    // Configurar cada sonido
-    Object.entries(soundsRef.current).forEach(([name, audio]) => {
-      const config = soundConfigs[name] || {};
-      audio.volume = config.volume || 0.5;
+    Object.entries(sounds).forEach(([key, config]) => {
+      const audio = new Audio(config.src);
+      audio.volume = config.volume || 1;
       audio.loop = config.loop || false;
+      audioMap.current.set(key, audio);
     });
 
+    // Limpiar los sonidos al desmontar
     return () => {
-      // Limpia los sonidos al desmontar
-      Object.values(soundsRef.current).forEach(audio => {
+      audioMap.current.forEach(audio => {
         audio.pause();
         audio.currentTime = 0;
       });
-      currentlyPlayingRef.current.clear();
+      audioMap.current.clear();
     };
-  }, []);
+  }, [customSounds]);
 
-  const playSound = useCallback((soundName: string) => {
-    const sound = soundsRef.current[soundName];
-    if (!sound) return;
+  const playSound = useCallback((soundId: string) => {
+    if (!isEnabled.current) return;
 
-    // Si el sonido ya está reproduciéndose y no es un sonido en loop
-    if (currentlyPlayingRef.current.has(soundName) && !sound.loop) {
-      sound.currentTime = 0;
-    } else {
-      currentlyPlayingRef.current.add(soundName);
-      sound.play().catch(error => {
-        console.warn(`Error playing sound: ${error}`);
+    const audio = audioMap.current.get(soundId);
+    if (audio) {
+      // Reiniciar el audio si ya está reproduciéndose
+      audio.currentTime = 0;
+      audio.play().catch(error => {
+        console.warn(`Error playing sound ${soundId}:`, error);
       });
     }
-
-    // Para sonidos que no están en loop, eliminarlos de la lista cuando terminan
-    if (!sound.loop) {
-      sound.onended = () => {
-        currentlyPlayingRef.current.delete(soundName);
-      };
-    }
   }, []);
 
-  const stopSound = useCallback((soundName: string) => {
-    const sound = soundsRef.current[soundName];
-    if (!sound) return;
-
-    sound.pause();
-    sound.currentTime = 0;
-    currentlyPlayingRef.current.delete(soundName);
+  const stopSound = useCallback((soundId: string) => {
+    const audio = audioMap.current.get(soundId);
+    if (audio) {
+      audio.pause();
+      audio.currentTime = 0;
+    }
   }, []);
 
   const stopAllSounds = useCallback(() => {
-    Object.values(soundsRef.current).forEach(audio => {
+    audioMap.current.forEach(audio => {
       audio.pause();
       audio.currentTime = 0;
     });
-    currentlyPlayingRef.current.clear();
   }, []);
 
-  return { playSound, stopSound, stopAllSounds };
+  const setVolume = useCallback((soundId: string, volume: number) => {
+    const audio = audioMap.current.get(soundId);
+    if (audio) {
+      audio.volume = Math.max(0, Math.min(1, volume));
+    }
+  }, []);
+
+  const enableSounds = useCallback(() => {
+    isEnabled.current = true;
+  }, []);
+
+  const disableSounds = useCallback(() => {
+    isEnabled.current = false;
+    stopAllSounds();
+  }, [stopAllSounds]);
+
+  const preloadSounds = useCallback(() => {
+    audioMap.current.forEach(audio => {
+      audio.load();
+    });
+  }, []);
+
+  return {
+    playSound,
+    stopSound,
+    stopAllSounds,
+    setVolume,
+    enableSounds,
+    disableSounds,
+    preloadSounds
+  };
 };
 
 export default useSound; 

@@ -1,189 +1,106 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { securityService } from '../services/securityService';
-import { Icons } from './Icons';
+import { authService } from '../services/authService';
 import '../styles/Login.css';
 
 const Login: React.FC = () => {
-  const navigate = useNavigate();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [error, setError] = useState<string | null>(null);
+  const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
-  const [showForgotPassword, setShowForgotPassword] = useState(false);
-  const [resetEmail, setResetEmail] = useState('');
-  const [resetSent, setResetSent] = useState(false);
+  const navigate = useNavigate();
 
-  const handleLogin = async (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setError(null);
+    setError('');
     setLoading(true);
 
     try {
-      await securityService.login({ email, password });
-      navigate('/admin');
-    } catch (error) {
-      setError('Credenciales inválidas. Por favor, intente nuevamente.');
+      console.log('Iniciando proceso de login...');
+      const { user } = await authService.login(email, password);
+      console.log('Respuesta del login:', user);
+      
+      if (user) {
+        console.log('Usuario autenticado, guardando en localStorage...');
+        localStorage.setItem('isAuthenticated', 'true');
+        localStorage.setItem('userEmail', user.email || '');
+        console.log('Estado de localStorage:', {
+          isAuthenticated: localStorage.getItem('isAuthenticated'),
+          userEmail: localStorage.getItem('userEmail')
+        });
+        console.log('Redirigiendo al dashboard...');
+        navigate('/dashboard');
+      } else {
+        console.log('No se recibió usuario en la respuesta');
+        setError('Error al iniciar sesión: No se recibió usuario');
+      }
+    } catch (err: any) {
+      console.error('Error durante el login:', err);
+      setError(err.message);
     } finally {
       setLoading(false);
     }
   };
-
-  const handlePasswordReset = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setError(null);
-    setLoading(true);
-
-    try {
-      await securityService.requestPasswordReset(resetEmail);
-      setResetSent(true);
-    } catch (error) {
-      setError('Error al enviar el correo de restablecimiento. Por favor, intente nuevamente.');
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  if (showForgotPassword) {
-    return (
-      <div className="login-container">
-        <div className="login-card">
-          <div className="login-header">
-            <h2>Restablecer Contraseña</h2>
-            <button
-              className="back-button"
-              onClick={() => setShowForgotPassword(false)}
-            >
-              <Icons.ArrowLeft /> Volver
-            </button>
-          </div>
-
-          {resetSent ? (
-            <div className="success-message">
-              <Icons.Check />
-              <p>Se ha enviado un correo con las instrucciones para restablecer su contraseña.</p>
-              <button
-                className="primary-button"
-                onClick={() => {
-                  setShowForgotPassword(false);
-                  setResetSent(false);
-                }}
-              >
-                Volver al inicio de sesión
-              </button>
-            </div>
-          ) : (
-            <form onSubmit={handlePasswordReset}>
-              <div className="form-group">
-                <label htmlFor="resetEmail">Correo electrónico</label>
-                <div className="input-group">
-                  <Icons.Mail />
-                  <input
-                    type="email"
-                    id="resetEmail"
-                    value={resetEmail}
-                    onChange={(e) => setResetEmail(e.target.value)}
-                    placeholder="Ingrese su correo electrónico"
-                    required
-                  />
-                </div>
-              </div>
-
-              {error && (
-                <div className="error-message">
-                  <Icons.Error />
-                  {error}
-                </div>
-              )}
-
-              <button
-                type="submit"
-                className="primary-button"
-                disabled={loading}
-              >
-                {loading ? (
-                  <>
-                    <Icons.Spinner className="spin" />
-                    Enviando...
-                  </>
-                ) : (
-                  'Enviar instrucciones'
-                )}
-              </button>
-            </form>
-          )}
-        </div>
-      </div>
-    );
-  }
 
   return (
     <div className="login-container">
       <div className="login-card">
-        <div className="login-header">
-          <h2>Iniciar Sesión</h2>
-          <p>Ingrese sus credenciales para continuar</p>
-        </div>
-
-        <form onSubmit={handleLogin}>
-          <div className="form-group">
-            <label htmlFor="email">Correo electrónico</label>
-            <div className="input-group">
-              <Icons.Mail />
-              <input
-                type="email"
-                id="email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                placeholder="Ingrese su correo electrónico"
-                required
-              />
+        <img 
+          src="/pintemas-logo.png" 
+          alt="Pintemas Logo" 
+          className="login-logo"
+        />
+        <h2>Iniciar Sesión</h2>
+        
+        <form onSubmit={handleSubmit} className="login-form">
+          {error && (
+            <div className="error-message" role="alert">
+              {error}
+              <p className="help-text">
+                Credenciales temporales:<br/>
+                Email: santiagomartinez@upc.edu.ar<br/>
+                Contraseña: Pintemas2024!
+              </p>
             </div>
+          )}
+          
+          <div className="form-group">
+            <label htmlFor="email">Email</label>
+            <input
+              id="email"
+              type="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              placeholder="santiagomartinez@upc.edu.ar"
+              required
+              autoComplete="email"
+              disabled={loading}
+              aria-invalid={!!error}
+            />
           </div>
 
           <div className="form-group">
             <label htmlFor="password">Contraseña</label>
-            <div className="input-group">
-              <Icons.Lock />
-              <input
-                type="password"
-                id="password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                placeholder="Ingrese su contraseña"
-                required
-              />
-            </div>
+            <input
+              id="password"
+              type="password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              placeholder="••••••••"
+              required
+              autoComplete="current-password"
+              disabled={loading}
+              aria-invalid={!!error}
+            />
           </div>
 
-          {error && (
-            <div className="error-message">
-              <Icons.Error />
-              {error}
-            </div>
-          )}
-
-          <button
-            type="submit"
-            className="primary-button"
+          <button 
+            type="submit" 
+            className="login-button"
             disabled={loading}
+            aria-busy={loading}
           >
-            {loading ? (
-              <>
-                <Icons.Spinner className="spin" />
-                Iniciando sesión...
-              </>
-            ) : (
-              'Iniciar sesión'
-            )}
-          </button>
-
-          <button
-            type="button"
-            className="text-button"
-            onClick={() => setShowForgotPassword(true)}
-          >
-            ¿Olvidó su contraseña?
+            {loading ? 'Iniciando sesión...' : 'Iniciar Sesión'}
           </button>
         </form>
       </div>

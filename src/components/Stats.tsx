@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import StatsService from '../services/stats';
-import Icons from './Icons';
+import { StatsService } from '../services/stats';
+import { Icons } from './Icons';
 import '../styles/Stats.css';
 
 const Stats: React.FC = () => {
@@ -57,13 +57,13 @@ const Stats: React.FC = () => {
 
       <motion.div className="stats-grid" variants={itemVariants}>
         <div className="stat-card total-spins">
-          <Icons name="celebration" size={32} />
+          <Icons.Star size={32} />
           <h3>Total de Giros</h3>
           <p className="stat-value">{stats.totalSpins}</p>
         </div>
 
         <div className="stat-card claimed-prizes">
-          <Icons name="gift" size={32} />
+          <Icons.Gift size={32} />
           <h3>Premios Canjeados</h3>
           <p className="stat-value">{stats.claimedPrizes}</p>
           <p className="stat-subtitle">
@@ -77,7 +77,7 @@ const Stats: React.FC = () => {
         {Object.entries(stats.prizesWon).map(([prizeId, prize]) => (
           <div key={prizeId} className="prize-stat-row">
             <div className="prize-info">
-              <Icons name={Number(prizeId) === 5 ? 'gift' : 'discount'} size={24} />
+              {Number(prizeId) === 5 ? <Icons.Gift size={24} /> : <Icons.Tag size={24} />}
               <span className="prize-name">{prize.name}</span>
             </div>
             <div className="prize-details">

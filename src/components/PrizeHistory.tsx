@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { prizeHistoryService, PrizeHistoryItem, PrizeHistoryFilter, ExportFormat } from '../services/prizeHistoryService';
-import { Icons } from './Icons';
+import { History, Download, Spinner, Error, ArrowLeft, ArrowRight } from './Icons';
+import '../styles/variables.css';
 import '../styles/PrizeHistory.css';
 
 interface PrizeHistoryProps {
@@ -87,10 +88,10 @@ const PrizeHistory: React.FC<PrizeHistoryProps> = ({ storeId, initialFilter = {}
   };
 
   return (
-    <div className="prize-history">
+    <div className="prize-history" role="region" aria-label="Historial de Premios">
       <div className="history-header">
         <h2 className="history-title">
-          <Icons.History /> Historial de Premios
+          <History className="icon" /> Historial de Premios
         </h2>
         <div className="export-controls">
           <select
@@ -98,6 +99,7 @@ const PrizeHistory: React.FC<PrizeHistoryProps> = ({ storeId, initialFilter = {}
             value={exportFormat}
             onChange={(e) => setExportFormat(e.target.value as ExportFormat)}
             disabled={exporting}
+            aria-label="Formato de exportación"
           >
             <option value="xlsx">Excel (.xlsx)</option>
             <option value="csv">CSV (.csv)</option>
@@ -107,28 +109,32 @@ const PrizeHistory: React.FC<PrizeHistoryProps> = ({ storeId, initialFilter = {}
             className="export-button"
             onClick={handleExport}
             disabled={exporting || loading}
+            aria-busy={exporting}
+            aria-label={exporting ? 'Exportando...' : 'Exportar historial'}
           >
             {exporting ? (
-              <span className="loading-spinner">
-                <Icons.Spinner />
+              <span className="loading-spinner" aria-hidden="true">
+                <Spinner className="icon" />
               </span>
             ) : (
               <>
-                <Icons.Download /> Exportar
+                <Download className="icon" /> Exportar
               </>
             )}
           </button>
         </div>
       </div>
 
-      <div className="history-filters">
+      <div className="history-filters" role="search" aria-label="Filtros de historial">
         <div className="filter-group">
-          <label>Estado:</label>
+          <label htmlFor="status-filter">Estado:</label>
           <select
+            id="status-filter"
             value={filter.claimed?.toString() ?? 'all'}
             onChange={(e) => handleFilterChange({
               claimed: e.target.value === 'all' ? undefined : e.target.value === 'true'
             })}
+            aria-label="Filtrar por estado"
           >
             <option value="all">Todos</option>
             <option value="true">Canjeados</option>
@@ -137,53 +143,57 @@ const PrizeHistory: React.FC<PrizeHistoryProps> = ({ storeId, initialFilter = {}
         </div>
 
         <div className="filter-group">
-          <label>Desde:</label>
+          <label htmlFor="start-date">Desde:</label>
           <input
+            id="start-date"
             type="date"
             value={filter.startDate?.toISOString().split('T')[0] ?? ''}
             onChange={(e) => handleFilterChange({
               startDate: e.target.value ? new Date(e.target.value) : undefined
             })}
+            aria-label="Fecha inicial"
           />
         </div>
 
         <div className="filter-group">
-          <label>Hasta:</label>
+          <label htmlFor="end-date">Hasta:</label>
           <input
+            id="end-date"
             type="date"
             value={filter.endDate?.toISOString().split('T')[0] ?? ''}
             onChange={(e) => handleFilterChange({
               endDate: e.target.value ? new Date(e.target.value) : undefined
             })}
+            aria-label="Fecha final"
           />
         </div>
       </div>
 
       {error && (
-        <div className="history-error">
-          <Icons.Error /> {error}
+        <div className="history-error" role="alert">
+          <Error className="icon" /> {error}
         </div>
       )}
 
       <div className="history-table-container">
-        <table className="history-table">
+        <table className="history-table" role="grid" aria-busy={loading}>
           <thead>
             <tr>
-              <th>Código</th>
-              <th>Premio</th>
-              <th>Fecha de Generación</th>
-              <th>Estado</th>
-              <th>Fecha de Canje</th>
+              <th scope="col">Código</th>
+              <th scope="col">Premio</th>
+              <th scope="col">Fecha de Generación</th>
+              <th scope="col">Estado</th>
+              <th scope="col">Fecha de Canje</th>
             </tr>
           </thead>
           <tbody>
             {loading ? (
               <tr>
                 <td colSpan={5} className="loading-cell">
-                  <span className="loading-spinner">
-                    <Icons.Spinner />
+                  <span className="loading-spinner" aria-hidden="true">
+                    <Spinner className="icon" />
                   </span>
-                  Cargando...
+                  <span>Cargando...</span>
                 </td>
               </tr>
             ) : prizes.length === 0 ? (
@@ -199,7 +209,10 @@ const PrizeHistory: React.FC<PrizeHistoryProps> = ({ storeId, initialFilter = {}
                   <td>{prize.name}</td>
                   <td>{new Date(prize.timestamp).toLocaleString()}</td>
                   <td>
-                    <span className={`status-badge ${prize.claimed ? 'claimed' : 'pending'}`}>
+                    <span 
+                      className={`status-badge ${prize.claimed ? 'claimed' : 'pending'}`}
+                      role="status"
+                    >
                       {prize.claimed ? 'Canjeado' : 'Pendiente'}
                     </span>
                   </td>
@@ -218,23 +231,25 @@ const PrizeHistory: React.FC<PrizeHistoryProps> = ({ storeId, initialFilter = {}
       </div>
 
       {total > filter.limit! && (
-        <div className="pagination">
+        <div className="pagination" role="navigation" aria-label="Paginación">
           <button
             className="page-button"
             disabled={filter.page === 1}
             onClick={() => handlePageChange(filter.page! - 1)}
+            aria-label="Página anterior"
           >
-            <Icons.ArrowLeft /> Anterior
+            <ArrowLeft className="icon" /> Anterior
           </button>
-          <span className="page-info">
+          <span className="page-info" aria-current="page">
             Página {filter.page} de {Math.ceil(total / filter.limit!)}
           </span>
           <button
             className="page-button"
             disabled={filter.page! * filter.limit! >= total}
             onClick={() => handlePageChange(filter.page! + 1)}
+            aria-label="Página siguiente"
           >
-            Siguiente <Icons.ArrowRight />
+            Siguiente <ArrowRight className="icon" />
           </button>
         </div>
       )}

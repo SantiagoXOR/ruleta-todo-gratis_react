@@ -26,13 +26,20 @@ export default defineConfig({
     sourcemap: true
   },
   esbuild: {
-    loader: 'jsx',
+    loader: 'tsx',
     include: /\.[jt]sx?$/,
+    tsconfigRaw: {
+      compilerOptions: {
+        jsx: 'react-jsx'
+      }
+    }
   },
   optimizeDeps: {
     esbuildOptions: {
       loader: {
         '.js': 'jsx',
+        '.ts': 'tsx',
+        '.tsx': 'tsx'
       },
     },
   },

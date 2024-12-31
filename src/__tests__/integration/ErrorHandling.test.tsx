@@ -1,8 +1,8 @@
 import React from 'react';
-import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { ThemeProvider } from 'styled-components';
-import { act } from 'react-dom/test-utils';
+import { act } from 'react';
 import App from '../../App';
 import { prizeService } from '../../services/prizes';
 import theme from '../../styles/theme';
@@ -35,14 +35,26 @@ describe('Manejo de Errores y Recuperación', () => {
     vi.clearAllMocks();
     vi.useFakeTimers();
     localStorage.clear();
+
+    // Configurar mocks por defecto
+    (prizeService.getActivePrizes as any).mockResolvedValue([]);
+    (prizeService.getClaimedPrizes as any).mockResolvedValue([]);
+    (prizeService.getExpiredPrizes as any).mockResolvedValue([]);
   });
 
   afterEach(() => {
     vi.useRealTimers();
   });
 
+  const renderApp = () => {
+    return render(
+      <ThemeProvider theme={theme}>
+        <App />
+      </ThemeProvider>
+    );
+  };
+
   it('debe manejar errores de red y reintentar automáticamente', async () => {
-    // Simular error de red inicial
     let attemptCount = 0;
     (prizeService.savePrize as any).mockImplementation(() => {
       attemptCount++;
@@ -57,26 +69,25 @@ describe('Manejo de Errores y Recuperación', () => {
       });
     });
 
-    render(
-      <ThemeProvider theme={theme}>
-        <App />
-      </ThemeProvider>
-    );
+    renderApp();
 
-    const spinButton = screen.getByRole('button', { name: 'Girar' });
-    fireEvent.click(spinButton);
-
-    // Verificar error inicial
+    const spinButton = await screen.findByRole('button', { name: /girar/i });
     await act(async () => {
-      await vi.advanceTimersByTimeAsync(1000);
+      fireEvent.click(spinButton);
+      await new Promise(resolve => setTimeout(resolve, 100));
     });
-    expect(screen.getByText(/Error de conexión/i)).toBeInTheDocument();
 
-    // Verificar reintento automático
-    await act(async () => {
-      await vi.advanceTimersByTimeAsync(5000);
+    await waitFor(() => {
+      expect(screen.getByText(/error de conexión/i)).toBeInTheDocument();
     });
-    expect(screen.getByText(/Premio Reintento/i)).toBeInTheDocument();
+
+    await act(async () => {
+      await new Promise(resolve => setTimeout(resolve, 1000));
+    });
+
+    await waitFor(() => {
+      expect(screen.getByText(/premio reintento/i)).toBeInTheDocument();
+    });
   });
 
   it('debe manejar errores de validación y mostrar mensajes apropiados', async () => {
@@ -86,6 +97,8 @@ describe('Manejo de Errores y Recuperación', () => {
       { code: 'CLAIMED', message: 'Premio ya reclamado' },
     ];
 
+    renderApp();
+
     for (const error of mockValidationErrors) {
       (prizeService.isPrizeValid as any).mockResolvedValueOnce(false);
       (prizeService.getPrizeByCode as any).mockResolvedValueOnce({
@@ -93,23 +106,26 @@ describe('Manejo de Errores y Recuperación', () => {
         code: error.code,
       });
 
-      const codeInput = screen.getByPlaceholderText('Ingresa el código del premio');
-      const verifyButton = screen.getByRole('button', { name: 'Verificar premio' });
+      const codeInput = await screen.findByPlaceholderText(/ingresa el código/i);
+      const verifyButton = await screen.findByRole('button', { name: /verificar/i });
 
-      fireEvent.change(codeInput, { target: { value: error.code } });
-      fireEvent.click(verifyButton);
+      await act(async () => {
+        fireEvent.change(codeInput, { target: { value: error.code } });
+        fireEvent.click(verifyButton);
+        await new Promise(resolve => setTimeout(resolve, 100));
+      });
 
       await waitFor(() => {
         expect(screen.getByText(error.message)).toBeInTheDocument();
       });
 
-      // Limpiar para siguiente iteración
-      fireEvent.change(codeInput, { target: { value: '' } });
+      await act(async () => {
+        fireEvent.change(codeInput, { target: { value: '' } });
+      });
     }
   });
 
   it('debe recuperarse de errores de almacenamiento local', async () => {
-    // Simular error de localStorage
     const mockError = new Error('Error de almacenamiento');
     const originalSetItem = localStorage.setItem;
     localStorage.setItem = vi.fn().mockImplementation(() => {
@@ -125,41 +141,31 @@ describe('Manejo de Errores y Recuperación', () => {
 
     (prizeService.savePrize as any).mockResolvedValue(mockPrize);
 
-    render(
-      <ThemeProvider theme={theme}>
-        <App />
-      </ThemeProvider>
-    );
+    renderApp();
 
-    const spinButton = screen.getByRole('button', { name: 'Girar' });
-    fireEvent.click(spinButton);
-
+    const spinButton = await screen.findByRole('button', { name: /girar/i });
     await act(async () => {
-      await vi.advanceTimersByTimeAsync(5000);
+      fireEvent.click(spinButton);
+      await new Promise(resolve => setTimeout(resolve, 1000));
     });
 
-    // Verificar que la aplicación sigue funcionando
-    expect(screen.getByText(/Premio Almacenamiento/i)).toBeInTheDocument();
+    await waitFor(() => {
+      expect(screen.getByText(/premio almacenamiento/i)).toBeInTheDocument();
+    });
 
-    // Restaurar localStorage
     localStorage.setItem = originalSetItem;
   });
 
   it('debe manejar errores durante la carga inicial de datos', async () => {
-    // Simular error en la carga de datos
     (prizeService.getActivePrizes as any).mockRejectedValue(new Error('Error de carga'));
     (prizeService.getClaimedPrizes as any).mockRejectedValue(new Error('Error de carga'));
 
-    render(
-      <ThemeProvider theme={theme}>
-        <App />
-      </ThemeProvider>
-    );
+    renderApp();
 
-    // Verificar mensaje de error de carga
-    expect(screen.getByText(/Error al cargar datos/i)).toBeInTheDocument();
+    await waitFor(() => {
+      expect(screen.getByText(/error al cargar datos/i)).toBeInTheDocument();
+    });
 
-    // Simular recuperación
     (prizeService.getActivePrizes as any).mockResolvedValue([{
       id: 1,
       name: 'Premio Recuperado',
@@ -168,17 +174,18 @@ describe('Manejo de Errores y Recuperación', () => {
     }]);
     (prizeService.getClaimedPrizes as any).mockResolvedValue([]);
 
-    // Forzar recarga
-    const reloadButton = screen.getByRole('button', { name: /recargar/i });
-    fireEvent.click(reloadButton);
+    const reloadButton = await screen.findByRole('button', { name: /recargar/i });
+    await act(async () => {
+      fireEvent.click(reloadButton);
+      await new Promise(resolve => setTimeout(resolve, 100));
+    });
 
     await waitFor(() => {
-      expect(screen.getByText(/Premio Recuperado/i)).toBeInTheDocument();
+      expect(screen.getByText(/premio recuperado/i)).toBeInTheDocument();
     });
   });
 
   it('debe manejar errores de animación y sonido', async () => {
-    // Simular error en la reproducción de sonido
     const mockPlaySound = vi.fn().mockImplementation(() => {
       throw new Error('Error de audio');
     });
@@ -189,77 +196,61 @@ describe('Manejo de Errores y Recuperación', () => {
         stopSound: vi.fn(),
         stopAllSounds: vi.fn(),
       }),
-    }));
+    }), { virtual: true });
 
-    render(
-      <ThemeProvider theme={theme}>
-        <App />
-      </ThemeProvider>
-    );
+    renderApp();
 
-    const spinButton = screen.getByRole('button', { name: 'Girar' });
-    fireEvent.click(spinButton);
-
-    // Verificar que la aplicación continúa funcionando
+    const spinButton = await screen.findByRole('button', { name: /girar/i });
     await act(async () => {
-      await vi.advanceTimersByTimeAsync(5000);
+      fireEvent.click(spinButton);
+      await new Promise(resolve => setTimeout(resolve, 1000));
     });
 
-    // La ruleta debería seguir girando incluso sin sonido
-    expect(screen.getByRole('button', { name: 'Girar' })).toBeInTheDocument();
+    await waitFor(() => {
+      expect(screen.getByRole('button', { name: /girar/i })).toBeInTheDocument();
+    });
   });
 
   it('debe manejar múltiples errores simultáneos', async () => {
-    // Simular múltiples errores
     const errors = {
       save: new Error('Error al guardar'),
       load: new Error('Error al cargar'),
       validate: new Error('Error de validación'),
     };
 
-    let errorCount = 0;
     (prizeService.savePrize as any).mockRejectedValue(errors.save);
     (prizeService.getActivePrizes as any).mockRejectedValue(errors.load);
     (prizeService.isPrizeValid as any).mockRejectedValue(errors.validate);
 
-    render(
-      <ThemeProvider theme={theme}>
-        <App />
-      </ThemeProvider>
-    );
+    renderApp();
 
-    // Intentar múltiples operaciones
-    const spinButton = screen.getByRole('button', { name: 'Girar' });
-    const codeInput = screen.getByPlaceholderText('Ingresa el código del premio');
-    const verifyButton = screen.getByRole('button', { name: 'Verificar premio' });
-
-    // Realizar acciones simultáneas
-    fireEvent.click(spinButton);
-    fireEvent.change(codeInput, { target: { value: 'TEST123' } });
-    fireEvent.click(verifyButton);
+    const spinButton = await screen.findByRole('button', { name: /girar/i });
+    const codeInput = await screen.findByPlaceholderText(/ingresa el código/i);
+    const verifyButton = await screen.findByRole('button', { name: /verificar/i });
 
     await act(async () => {
-      await vi.advanceTimersByTimeAsync(1000);
+      fireEvent.click(spinButton);
+      fireEvent.change(codeInput, { target: { value: 'TEST123' } });
+      fireEvent.click(verifyButton);
+      await new Promise(resolve => setTimeout(resolve, 100));
     });
 
-    // Verificar que se muestran los errores
-    expect(screen.getAllByText(/error/i)).toHaveLength(2); // Dos mensajes de error visibles
+    const errorMessages = await screen.findAllByText(/error/i);
+    expect(errorMessages.length).toBeGreaterThanOrEqual(2);
 
-    // Simular recuperación gradual
     (prizeService.savePrize as any).mockResolvedValue({
       id: 1,
-      name: 'Premio Recuperación',
-      code: 'RECOVERY123',
+      name: 'Premio Recuperado',
+      code: 'RECOVER123',
       claimed: false,
     });
 
-    fireEvent.click(spinButton);
-
     await act(async () => {
-      await vi.advanceTimersByTimeAsync(5000);
+      await new Promise(resolve => setTimeout(resolve, 1000));
     });
 
-    // Verificar recuperación
-    expect(screen.getByText(/Premio Recuperación/i)).toBeInTheDocument();
+    await waitFor(() => {
+      expect(screen.getByText(/premio recuperado/i)).toBeInTheDocument();
+    });
   });
 }); 

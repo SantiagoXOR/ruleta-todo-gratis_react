@@ -1,16 +1,17 @@
 import React, { useState, useEffect } from 'react';
 import { adminService, AdminStats, Store, AdminUser, AuditLog } from '../services/adminService';
 import { Icons } from './Icons';
+import PrizeVerifier from './PrizeVerifier';
 import '../styles/AdminDashboard.css';
 
-const AdminDashboard: React.FC = () => {
+function AdminDashboard() {
   const [stats, setStats] = useState<AdminStats | null>(null);
   const [stores, setStores] = useState<Store[]>([]);
   const [users, setUsers] = useState<AdminUser[]>([]);
   const [auditLogs, setAuditLogs] = useState<AuditLog[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [activeTab, setActiveTab] = useState<'overview' | 'stores' | 'users' | 'audit'>('overview');
+  const [activeTab, setActiveTab] = useState<'overview' | 'stores' | 'users' | 'audit' | 'verifier'>('overview');
   const [filters, setFilters] = useState({
     storeSearch: '',
     userSearch: '',
@@ -27,6 +28,7 @@ const AdminDashboard: React.FC = () => {
     setError(null);
 
     try {
+      console.log('Cargando datos iniciales...');
       const [statsData, storesData, usersData, logsData] = await Promise.all([
         adminService.getAdminStats(),
         adminService.getStores(),
@@ -34,11 +36,19 @@ const AdminDashboard: React.FC = () => {
         adminService.getAuditLogs()
       ]);
 
+      console.log('Datos cargados:', {
+        stats: statsData,
+        stores: storesData,
+        users: usersData,
+        logs: logsData
+      });
+
       setStats(statsData);
       setStores(storesData);
       setUsers(usersData);
       setAuditLogs(logsData);
     } catch (error) {
+      console.error('Error al cargar datos:', error);
       setError('Error al cargar los datos del panel');
     } finally {
       setLoading(false);
@@ -369,73 +379,82 @@ const AdminDashboard: React.FC = () => {
     </div>
   );
 
+  const renderContent = () => {
+    if (loading) {
+      return (
+        <div className="loading-state">
+          <Icons.Spinner className="spinner" />
+          <p>Cargando datos...</p>
+        </div>
+      );
+    }
+
+    if (error) {
+      return (
+        <div className="error-state">
+          <Icons.Error className="error-icon" />
+          <p>{error}</p>
+          <button onClick={loadInitialData}>Reintentar</button>
+        </div>
+      );
+    }
+
+    switch (activeTab) {
+      case 'overview':
+        return renderOverview();
+      case 'stores':
+        return renderStores();
+      case 'users':
+        return renderUsers();
+      case 'audit':
+        return renderAuditLogs();
+      case 'verifier':
+        return <PrizeVerifier />;
+      default:
+        return null;
+    }
+  };
+
   return (
     <div className="admin-dashboard">
-      <div className="dashboard-header">
-        <h2>Panel de Administración</h2>
-        <div className="header-actions">
-          <button
-            className="refresh-button"
-            onClick={loadInitialData}
-            disabled={loading}
-          >
-            <Icons.Refresh /> Actualizar
-          </button>
-        </div>
-      </div>
-
-      {error && (
-        <div className="error-message">
-          <Icons.Error /> {error}
-        </div>
-      )}
-
-      <div className="dashboard-tabs">
+      <nav className="dashboard-nav">
         <button
-          className={`tab-button ${activeTab === 'overview' ? 'active' : ''}`}
+          className={`nav-button ${activeTab === 'overview' ? 'active' : ''}`}
           onClick={() => setActiveTab('overview')}
         >
-          <Icons.Dashboard /> Resumen
+          Vista General
         </button>
         <button
-          className={`tab-button ${activeTab === 'stores' ? 'active' : ''}`}
+          className={`nav-button ${activeTab === 'stores' ? 'active' : ''}`}
           onClick={() => setActiveTab('stores')}
         >
-          <Icons.Store /> Tiendas
+          Tiendas
         </button>
         <button
-          className={`tab-button ${activeTab === 'users' ? 'active' : ''}`}
+          className={`nav-button ${activeTab === 'users' ? 'active' : ''}`}
           onClick={() => setActiveTab('users')}
         >
-          <Icons.Users /> Usuarios
+          Usuarios
         </button>
         <button
-          className={`tab-button ${activeTab === 'audit' ? 'active' : ''}`}
+          className={`nav-button ${activeTab === 'audit' ? 'active' : ''}`}
           onClick={() => setActiveTab('audit')}
         >
-          <Icons.List /> Auditoría
+          Auditoría
         </button>
-      </div>
+        <button
+          className={`nav-button ${activeTab === 'verifier' ? 'active' : ''}`}
+          onClick={() => setActiveTab('verifier')}
+        >
+          Verificador
+        </button>
+      </nav>
 
-      <div className="dashboard-content">
-        {loading ? (
-          <div className="loading-state">
-            <span className="loading-spinner">
-              <Icons.Spinner />
-            </span>
-            Cargando datos...
-          </div>
-        ) : (
-          <>
-            {activeTab === 'overview' && renderOverview()}
-            {activeTab === 'stores' && renderStores()}
-            {activeTab === 'users' && renderUsers()}
-            {activeTab === 'audit' && renderAuditLogs()}
-          </>
-        )}
-      </div>
+      <main className="dashboard-content">
+        {renderContent()}
+      </main>
     </div>
   );
-};
+}
 
 export default AdminDashboard; 

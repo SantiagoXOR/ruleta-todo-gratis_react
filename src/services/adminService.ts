@@ -1,4 +1,4 @@
-import { PrizeWithCode } from '../types/wheel.types';
+import { supabase } from '../lib/supabase';
 
 export interface AdminStats {
   totalUsers: number;
@@ -50,18 +50,17 @@ export interface AuditLog {
 class AdminService {
   async getAdminStats(): Promise<AdminStats> {
     try {
-      const response = await fetch('/api/admin/stats', {
-        method: 'GET',
-        headers: {
-          'Content-Type': 'application/json'
-        }
-      });
-
-      if (!response.ok) {
-        throw new Error('Error al obtener estadísticas de administración');
-      }
-
-      return await response.json();
+      // Por ahora retornamos datos de ejemplo
+      return {
+        totalUsers: 100,
+        activeUsers: 75,
+        totalPrizes: 500,
+        claimedPrizes: 350,
+        totalStores: 10,
+        activeStores: 8,
+        revenue: 15000,
+        conversionRate: 70
+      };
     } catch (error) {
       console.error('Error:', error);
       throw error;
@@ -74,19 +73,29 @@ class AdminService {
     search?: string;
   }): Promise<AdminUser[]> {
     try {
-      const queryParams = new URLSearchParams(filters as any).toString();
-      const response = await fetch(`/api/admin/users?${queryParams}`, {
-        method: 'GET',
-        headers: {
-          'Content-Type': 'application/json'
+      // Por ahora retornamos datos de ejemplo
+      return [
+        {
+          id: '1',
+          email: 'admin@pintemas.com',
+          role: 'admin',
+          name: 'Administrador',
+          active: true,
+          lastLogin: new Date(),
+          createdAt: new Date(),
+          permissions: ['all']
+        },
+        {
+          id: '2',
+          email: 'manager@pintemas.com',
+          role: 'manager',
+          name: 'Gerente',
+          active: true,
+          lastLogin: new Date(),
+          createdAt: new Date(),
+          permissions: ['manage_store']
         }
-      });
-
-      if (!response.ok) {
-        throw new Error('Error al obtener usuarios');
-      }
-
-      return await response.json();
+      ];
     } catch (error) {
       console.error('Error:', error);
       throw error;
@@ -95,17 +104,8 @@ class AdminService {
 
   async updateUser(userId: string, updates: Partial<AdminUser>): Promise<void> {
     try {
-      const response = await fetch(`/api/admin/users/${userId}`, {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(updates)
-      });
-
-      if (!response.ok) {
-        throw new Error('Error al actualizar usuario');
-      }
+      // Implementar actualización de usuario en Supabase
+      console.log('Actualizando usuario:', userId, updates);
     } catch (error) {
       console.error('Error:', error);
       throw error;
@@ -117,19 +117,35 @@ class AdminService {
     search?: string;
   }): Promise<Store[]> {
     try {
-      const queryParams = new URLSearchParams(filters as any).toString();
-      const response = await fetch(`/api/admin/stores?${queryParams}`, {
-        method: 'GET',
-        headers: {
-          'Content-Type': 'application/json'
+      // Por ahora retornamos datos de ejemplo
+      return [
+        {
+          id: '1',
+          name: 'Tienda Central',
+          active: true,
+          location: 'Centro Comercial',
+          manager: 'Juan Pérez',
+          createdAt: new Date(),
+          prizeConfig: {
+            maxPrizesPerDay: 100,
+            maxPrizesPerUser: 1,
+            expirationDays: 7
+          }
+        },
+        {
+          id: '2',
+          name: 'Tienda Norte',
+          active: true,
+          location: 'Zona Norte',
+          manager: 'María García',
+          createdAt: new Date(),
+          prizeConfig: {
+            maxPrizesPerDay: 50,
+            maxPrizesPerUser: 1,
+            expirationDays: 7
+          }
         }
-      });
-
-      if (!response.ok) {
-        throw new Error('Error al obtener tiendas');
-      }
-
-      return await response.json();
+      ];
     } catch (error) {
       console.error('Error:', error);
       throw error;
@@ -138,17 +154,8 @@ class AdminService {
 
   async updateStore(storeId: string, updates: Partial<Store>): Promise<void> {
     try {
-      const response = await fetch(`/api/admin/stores/${storeId}`, {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(updates)
-      });
-
-      if (!response.ok) {
-        throw new Error('Error al actualizar tienda');
-      }
+      // Implementar actualización de tienda en Supabase
+      console.log('Actualizando tienda:', storeId, updates);
     } catch (error) {
       console.error('Error:', error);
       throw error;
@@ -157,19 +164,13 @@ class AdminService {
 
   async createStore(store: Omit<Store, 'id' | 'createdAt'>): Promise<Store> {
     try {
-      const response = await fetch('/api/admin/stores', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(store)
-      });
-
-      if (!response.ok) {
-        throw new Error('Error al crear tienda');
-      }
-
-      return await response.json();
+      // Implementar creación de tienda en Supabase
+      console.log('Creando tienda:', store);
+      return {
+        ...store,
+        id: '3',
+        createdAt: new Date()
+      };
     } catch (error) {
       console.error('Error:', error);
       throw error;
@@ -183,92 +184,29 @@ class AdminService {
     endDate?: Date;
   }): Promise<AuditLog[]> {
     try {
-      const queryParams = new URLSearchParams();
-      if (filters) {
-        Object.entries(filters).forEach(([key, value]) => {
-          if (value) {
-            if (value instanceof Date) {
-              queryParams.append(key, value.toISOString());
-            } else {
-              queryParams.append(key, value.toString());
-            }
-          }
-        });
-      }
-
-      const response = await fetch(`/api/admin/audit-logs?${queryParams}`, {
-        method: 'GET',
-        headers: {
-          'Content-Type': 'application/json'
-        }
-      });
-
-      if (!response.ok) {
-        throw new Error('Error al obtener logs de auditoría');
-      }
-
-      return await response.json();
-    } catch (error) {
-      console.error('Error:', error);
-      throw error;
-    }
-  }
-
-  async getPrizeConfiguration(storeId: string): Promise<Store['prizeConfig']> {
-    try {
-      const response = await fetch(`/api/admin/stores/${storeId}/prize-config`, {
-        method: 'GET',
-        headers: {
-          'Content-Type': 'application/json'
-        }
-      });
-
-      if (!response.ok) {
-        throw new Error('Error al obtener configuración de premios');
-      }
-
-      return await response.json();
-    } catch (error) {
-      console.error('Error:', error);
-      throw error;
-    }
-  }
-
-  async updatePrizeConfiguration(
-    storeId: string,
-    config: Partial<Store['prizeConfig']>
-  ): Promise<void> {
-    try {
-      const response = await fetch(`/api/admin/stores/${storeId}/prize-config`, {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json'
+      // Por ahora retornamos datos de ejemplo
+      return [
+        {
+          id: '1',
+          action: 'Login',
+          userId: '1',
+          userEmail: 'admin@pintemas.com',
+          timestamp: new Date(),
+          details: { ip: '192.168.1.1' },
+          ip: '192.168.1.1',
+          userAgent: 'Mozilla/5.0'
         },
-        body: JSON.stringify(config)
-      });
-
-      if (!response.ok) {
-        throw new Error('Error al actualizar configuración de premios');
-      }
-    } catch (error) {
-      console.error('Error:', error);
-      throw error;
-    }
-  }
-
-  async invalidatePrize(prizeId: string, reason: string): Promise<void> {
-    try {
-      const response = await fetch(`/api/admin/prizes/${prizeId}/invalidate`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({ reason })
-      });
-
-      if (!response.ok) {
-        throw new Error('Error al invalidar premio');
-      }
+        {
+          id: '2',
+          action: 'Premio reclamado',
+          userId: '2',
+          userEmail: 'manager@pintemas.com',
+          timestamp: new Date(),
+          details: { prizeId: '123' },
+          ip: '192.168.1.2',
+          userAgent: 'Mozilla/5.0'
+        }
+      ];
     } catch (error) {
       console.error('Error:', error);
       throw error;
@@ -277,19 +215,8 @@ class AdminService {
 
   async generateReport(type: 'users' | 'prizes' | 'stores', format: 'csv' | 'excel' | 'pdf'): Promise<Blob> {
     try {
-      const response = await fetch(`/api/admin/reports/${type}`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({ format })
-      });
-
-      if (!response.ok) {
-        throw new Error('Error al generar reporte');
-      }
-
-      return await response.blob();
+      // Por ahora retornamos un blob vacío
+      return new Blob(['Datos del reporte'], { type: 'text/plain' });
     } catch (error) {
       console.error('Error:', error);
       throw error;

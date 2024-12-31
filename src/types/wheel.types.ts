@@ -1,4 +1,4 @@
-import { ReactElement } from 'react';
+import { ReactElement, ReactNode } from 'react';
 
 export interface Prize {
   id: number;
@@ -8,22 +8,33 @@ export interface Prize {
   textColor?: string;
   probability?: number;
   isSpecial?: boolean;
-  icon: React.ReactNode;
+  icon: ReactNode;
 }
 
-export interface PrizeWithCode extends Prize {
+export interface PrizeWithCode {
+  id: string;
+  name: string;
   code: string;
-  timestamp: number;
   claimed: boolean;
   expiresAt: number;
 }
 
+export interface WheelConfig {
+  prizes: PrizeWithCode[];
+  spinDuration: number;
+  spinRevolutions: number;
+}
+
+export interface WheelState {
+  isSpinning: boolean;
+  selectedPrize: PrizeWithCode | null;
+  spinAngle: number;
+}
+
 export interface WheelProps {
-  initialRotation?: number;
-  spinDuration?: number;
-  minSpins?: number;
-  maxSpins?: number;
-  onPrizeWon?: (prize: PrizeWithCode) => void;
+  config?: WheelConfig;
+  onPrizeSelected?: (prize: PrizeWithCode) => void;
+  onSpinComplete?: () => void;
 }
 
 export interface ConfettiOptions {
@@ -33,3 +44,5 @@ export interface ConfettiOptions {
   decay?: number;
   scalar?: number;
 }
+
+export type { Prize, PrizeWithCode, WheelProps, ConfettiOptions };

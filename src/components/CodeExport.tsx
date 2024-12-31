@@ -1,18 +1,16 @@
-import React, { useState } from 'react';
+import React, { useState, useCallback, useMemo } from 'react';
 import { uniqueCodeService } from '../services/uniqueCodeService';
-import './CodeExport.css';
+import { Download } from './Icons';
+import '../styles/CodeExport.css';
 
 interface ExportOptions {
   format: 'csv' | 'excel';
   dateRange: 'all' | 'week' | 'month' | 'year';
   includeUsed: boolean;
   includeExpired: boolean;
-  prizeId?: number;
 }
 
-export const CodeExport: React.FC = () => {
-  const [exporting, setExporting] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+const CodeExport: React.FC = () => {
   const [options, setOptions] = useState<ExportOptions>({
     format: 'csv',
     dateRange: 'all',
@@ -20,58 +18,93 @@ export const CodeExport: React.FC = () => {
     includeExpired: false,
   });
 
-  const handleExport = async () => {
+  const [isExporting, setIsExporting] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  // Memoizar las opciones de fecha para evitar recálculos innecesarios
+  const dateRangeOptions = useMemo(() => [
+    { value: 'all', label: 'Todos' },
+    { value: 'week', label: 'Última Semana' },
+    { value: 'month', label: 'Último Mes' },
+    { value: 'year', label: 'Último Año' }
+  ], []);
+
+  // Memoizar los manejadores de eventos para evitar recreaciones innecesarias
+  const handleFormatChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
+    setOptions(prev => ({ ...prev, format: e.target.value as 'csv' | 'excel' }));
+    setError(null);
+  }, []);
+
+  const handleDateRangeChange = useCallback((e: React.ChangeEvent<HTMLSelectElement>) => {
+    setOptions(prev => ({ ...prev, dateRange: e.target.value as ExportOptions['dateRange'] }));
+    setError(null);
+  }, []);
+
+  const handleUsedChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
+    setOptions(prev => ({ ...prev, includeUsed: e.target.checked }));
+    setError(null);
+  }, []);
+
+  const handleExpiredChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
+    setOptions(prev => ({ ...prev, includeExpired: e.target.checked }));
+    setError(null);
+  }, []);
+
+  const handleExport = useCallback(async () => {
+    if (isExporting) return;
+    
+    setIsExporting(true);
+    setError(null);
+
     try {
-      setExporting(true);
-      setError(null);
-
       const response = await uniqueCodeService.exportCodes(options);
-      
-      if (response.success) {
-        // Crear un blob con los datos
-        const blob = new Blob([response.data], {
-          type: options.format === 'csv'
-            ? 'text/csv;charset=utf-8;'
-            : 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
-        });
 
-        // Crear URL del blob
-        const url = window.URL.createObjectURL(blob);
-
-        // Crear link temporal y simular click
-        const link = document.createElement('a');
-        link.href = url;
-        link.setAttribute('download', `codigos_${new Date().toISOString().split('T')[0]}.${options.format}`);
-        document.body.appendChild(link);
-        link.click();
-
-        // Limpiar
-        document.body.removeChild(link);
-        window.URL.revokeObjectURL(url);
-      } else {
-        setError(response.error || 'Error al exportar códigos');
+      if (!response.success || !response.data) {
+        throw new Error(response.error || 'Error al exportar códigos');
       }
+
+      // Descargar el archivo
+      const link = document.createElement('a');
+      link.href = response.data.url;
+      link.download = response.data.filename;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
     } catch (err) {
       setError('Error al exportar códigos');
+      console.error('Error al exportar códigos:', err);
     } finally {
-      setExporting(false);
+      setIsExporting(false);
     }
-  };
+  }, [options, isExporting]);
+
+  // Memoizar el contenido del botón para evitar recreaciones innecesarias
+  const buttonContent = useMemo(() => {
+    if (isExporting) {
+      return 'Exportando...';
+    }
+    return (
+      <>
+        <Download className="code-export-icon" />
+        Exportar Códigos
+      </>
+    );
+  }, [isExporting]);
 
   return (
-    <div className="export-container">
-      <h2>Exportar Códigos</h2>
-
-      <div className="export-options">
-        <div className="option-group">
-          <label>Formato</label>
-          <div className="radio-group">
+    <div className="code-export">
+      <div className="code-export-options">
+        <div className="code-export-section">
+          <h3>Formato</h3>
+          <div className="code-export-radio-group">
             <label>
               <input
                 type="radio"
                 name="format"
+                value="csv"
                 checked={options.format === 'csv'}
-                onChange={() => setOptions({ ...options, format: 'csv' })}
+                onChange={handleFormatChange}
+                disabled={isExporting}
               />
               CSV
             </label>
@@ -79,35 +112,40 @@ export const CodeExport: React.FC = () => {
               <input
                 type="radio"
                 name="format"
+                value="excel"
                 checked={options.format === 'excel'}
-                onChange={() => setOptions({ ...options, format: 'excel' })}
+                onChange={handleFormatChange}
+                disabled={isExporting}
               />
               Excel
             </label>
           </div>
         </div>
 
-        <div className="option-group">
-          <label>Rango de Fechas</label>
+        <div className="code-export-section">
+          <h3>Rango de Fechas</h3>
           <select
             value={options.dateRange}
-            onChange={(e) => setOptions({ ...options, dateRange: e.target.value as ExportOptions['dateRange'] })}
+            onChange={handleDateRangeChange}
+            disabled={isExporting}
           >
-            <option value="all">Todos</option>
-            <option value="week">Última Semana</option>
-            <option value="month">Último Mes</option>
-            <option value="year">Último Año</option>
+            {dateRangeOptions.map(option => (
+              <option key={option.value} value={option.value}>
+                {option.label}
+              </option>
+            ))}
           </select>
         </div>
 
-        <div className="option-group">
-          <label>Incluir</label>
-          <div className="checkbox-group">
+        <div className="code-export-section">
+          <h3>Filtros</h3>
+          <div className="code-export-checkbox-group">
             <label>
               <input
                 type="checkbox"
                 checked={options.includeUsed}
-                onChange={(e) => setOptions({ ...options, includeUsed: e.target.checked })}
+                onChange={handleUsedChange}
+                disabled={isExporting}
               />
               Códigos Usados
             </label>
@@ -115,7 +153,8 @@ export const CodeExport: React.FC = () => {
               <input
                 type="checkbox"
                 checked={options.includeExpired}
-                onChange={(e) => setOptions({ ...options, includeExpired: e.target.checked })}
+                onChange={handleExpiredChange}
+                disabled={isExporting}
               />
               Códigos Expirados
             </label>
@@ -123,19 +162,18 @@ export const CodeExport: React.FC = () => {
         </div>
       </div>
 
-      {error && (
-        <div className="export-error">
-          <p>{error}</p>
-        </div>
-      )}
+      {error && <div className="code-export-error" role="alert">{error}</div>}
 
       <button
-        className={`export-button ${exporting ? 'loading' : ''}`}
+        className="code-export-button"
         onClick={handleExport}
-        disabled={exporting}
+        disabled={isExporting}
+        aria-busy={isExporting}
       >
-        {exporting ? 'Exportando...' : 'Exportar Códigos'}
+        {buttonContent}
       </button>
     </div>
   );
 };
+
+export default CodeExport;

@@ -1,0 +1,212 @@
+/* Animaciones generales */
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes slideInFromRight {
+  from {
+    transform: translateX(30px);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+@keyframes slideInFromLeft {
+  from {
+    transform: translateX(-30px);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+@keyframes slideInFromTop {
+  from {
+    transform: translateY(-30px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+@keyframes slideInFromBottom {
+  from {
+    transform: translateY(30px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+@keyframes scaleIn {
+  from {
+    transform: scale(0.95);
+    opacity: 0;
+  }
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+@keyframes pulse {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.05); }
+  100% { transform: scale(1); }
+}
+
+@keyframes shimmer {
+  0% { background-position: -1000px 0; }
+  100% { background-position: 1000px 0; }
+}
+
+/* Clases de animación */
+.animate-fade-in {
+  animation: fadeIn 0.3s ease-in-out;
+}
+
+.animate-slide-right {
+  animation: slideInFromRight 0.3s ease-out;
+}
+
+.animate-slide-left {
+  animation: slideInFromLeft 0.3s ease-out;
+}
+
+.animate-slide-top {
+  animation: slideInFromTop 0.3s ease-out;
+}
+
+.animate-slide-bottom {
+  animation: slideInFromBottom 0.3s ease-out;
+}
+
+.animate-scale {
+  animation: scaleIn 0.3s ease-out;
+}
+
+.animate-pulse {
+  animation: pulse 2s infinite;
+}
+
+/* Transiciones */
+.transition-all {
+  transition: all 0.3s ease;
+}
+
+.transition-transform {
+  transition: transform 0.3s ease;
+}
+
+.transition-opacity {
+  transition: opacity 0.3s ease;
+}
+
+.transition-colors {
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+/* Estados de hover */
+.hover-scale:hover {
+  transform: scale(1.05);
+}
+
+.hover-lift:hover {
+  transform: translateY(-2px);
+}
+
+.hover-bright:hover {
+  filter: brightness(1.1);
+}
+
+/* Efectos de carga */
+.loading-shimmer {
+  background: linear-gradient(
+    to right,
+    rgba(255, 255, 255, 0.1) 0%,
+    rgba(255, 255, 255, 0.2) 50%,
+    rgba(255, 255, 255, 0.1) 100%
+  );
+  background-size: 1000px 100%;
+  animation: shimmer 2s infinite linear;
+}
+
+/* Efectos de entrada escalonados */
+.stagger-enter > * {
+  opacity: 0;
+  animation: slideInFromBottom 0.3s ease-out forwards;
+}
+
+.stagger-enter > *:nth-child(1) { animation-delay: 0.1s; }
+.stagger-enter > *:nth-child(2) { animation-delay: 0.2s; }
+.stagger-enter > *:nth-child(3) { animation-delay: 0.3s; }
+.stagger-enter > *:nth-child(4) { animation-delay: 0.4s; }
+.stagger-enter > *:nth-child(5) { animation-delay: 0.5s; }
+
+/* Efectos de notificación */
+@keyframes notification {
+  0% { transform: translateX(100%); }
+  10% { transform: translateX(0); }
+  90% { transform: translateX(0); }
+  100% { transform: translateX(100%); }
+}
+
+.notification-slide {
+  animation: notification 5s ease-in-out;
+}
+
+/* Efectos de botón */
+.button-press:active {
+  transform: scale(0.95);
+}
+
+/* Efectos de tarjeta */
+.card-hover {
+  transition: all 0.3s ease;
+}
+
+.card-hover:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+}
+
+/* Efectos de gráfico */
+.chart-animate path {
+  transition: all 0.3s ease;
+}
+
+/* Efectos de tabla */
+.table-row-hover:hover {
+  transform: scale(1.01);
+  background-color: rgba(0, 0, 0, 0.02);
+}
+
+/* Efectos de modal */
+.modal-overlay {
+  animation: fadeIn 0.3s ease-out;
+}
+
+.modal-content {
+  animation: scaleIn 0.3s ease-out;
+}
+
+/* Efectos de error */
+.error-shake {
+  animation: shake 0.5s ease-in-out;
+}
+
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  20%, 60% { transform: translateX(-5px); }
+  40%, 80% { transform: translateX(5px); }
+} 

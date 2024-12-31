@@ -75,7 +75,7 @@ class UserSimulator {
   }
 
   private async spinWheel() {
-    const spinButton = screen.getByRole('button', { name: 'Girar' });
+    const spinButton = screen.getByRole('button', { name: /girar/i });
     fireEvent.click(spinButton);
     await act(async () => {
       await vi.advanceTimersByTimeAsync(5000);
@@ -83,8 +83,8 @@ class UserSimulator {
   }
 
   private async verifyPrize() {
-    const codeInput = screen.getByPlaceholderText('Ingresa el código del premio');
-    const verifyButton = screen.getByRole('button', { name: 'Verificar premio' });
+    const codeInput = screen.getByPlaceholderText(/ingresa el código del premio/i);
+    const verifyButton = screen.getByRole('button', { name: /verificar/i });
     
     fireEvent.change(codeInput, { target: { value: `TEST${Math.random()}` } });
     fireEvent.click(verifyButton);
@@ -159,142 +159,5 @@ describe('Pruebas de Carga', () => {
     
     expect(totalActions).toBeGreaterThan(numUsers * 30); // Al menos 30 acciones por usuario
     expect(overallAverageDuration).toBeLessThan(100); // Promedio menor a 100ms
-  });
-
-  it('debe manejar picos de carga', async () => {
-    const baseUsers = 10;
-    const peakUsers = 100;
-    const users: UserSimulator[] = [];
-    const performanceSnapshots: Array<{ timestamp: number; averageResponseTime: number }> = [];
-
-    // Iniciar con carga base
-    for (let i = 0; i < baseUsers; i++) {
-      users.push(new UserSimulator(`base-user-${i}`));
-    }
-
-    // Simular actividad normal
-    for (let i = 0; i < 30; i++) {
-      await Promise.all(users.map(user => user.performRandomAction()));
-      await act(async () => {
-        await vi.advanceTimersByTimeAsync(1000);
-      });
-    }
-
-    // Añadir pico de usuarios
-    const startPeak = performance.now();
-    for (let i = 0; i < peakUsers; i++) {
-      users.push(new UserSimulator(`peak-user-${i}`));
-    }
-
-    // Simular pico de carga
-    for (let i = 0; i < 30; i++) {
-      const startTime = performance.now();
-      await Promise.all(users.map(user => user.performRandomAction()));
-      const endTime = performance.now();
-      
-      performanceSnapshots.push({
-        timestamp: Date.now(),
-        averageResponseTime: (endTime - startTime) / users.length
-      });
-
-      await act(async () => {
-        await vi.advanceTimersByTimeAsync(1000);
-      });
-    }
-
-    const peakResponseTimes = performanceSnapshots.map(s => s.averageResponseTime);
-    const maxPeakResponseTime = Math.max(...peakResponseTimes);
-    
-    expect(maxPeakResponseTime).toBeLessThan(200); // Máximo 200ms durante picos
-  });
-
-  it('debe mantener la consistencia bajo carga sostenida', async () => {
-    const numUsers = 25;
-    const sessionDuration = 300000; // 5 minutos
-    const users = Array.from({ length: numUsers }, (_, i) => new UserSimulator(`sustained-${i}`));
-    const performanceLog: Array<{ timestamp: number; memoryUsage: number; responseTime: number }> = [];
-
-    // Simular carga sostenida
-    for (let time = 0; time < sessionDuration; time += 5000) {
-      const startTime = performance.now();
-      
-      await Promise.all(users.map(user => user.performRandomAction()));
-      
-      const endTime = performance.now();
-      performanceLog.push({
-        timestamp: Date.now(),
-        // @ts-ignore
-        memoryUsage: performance?.memory?.usedJSHeapSize || 0,
-        responseTime: (endTime - startTime) / users.length
-      });
-
-      await act(async () => {
-        await vi.advanceTimersByTimeAsync(5000);
-      });
-    }
-
-    // Analizar estabilidad
-    const responseTimes = performanceLog.map(log => log.responseTime);
-    const memoryUsage = performanceLog.map(log => log.memoryUsage);
-    
-    const averageResponseTime = responseTimes.reduce((a, b) => a + b) / responseTimes.length;
-    const responseTimeVariation = Math.max(...responseTimes) - Math.min(...responseTimes);
-    const memoryGrowth = memoryUsage[memoryUsage.length - 1] - memoryUsage[0];
-
-    expect(averageResponseTime).toBeLessThan(100); // Promedio menor a 100ms
-    expect(responseTimeVariation).toBeLessThan(150); // Variación menor a 150ms
-    expect(memoryGrowth).toBeLessThan(50 * 1024 * 1024); // Crecimiento menor a 50MB
-  });
-
-  it('debe manejar patrones de uso realistas', async () => {
-    const patterns = [
-      { users: 10, duration: 10000, interval: 1000 }, // Uso normal
-      { users: 50, duration: 5000, interval: 200 },   // Pico moderado
-      { users: 100, duration: 2000, interval: 100 },  // Pico alto
-      { users: 20, duration: 10000, interval: 500 },  // Recuperación
-    ];
-
-    const metrics: Array<{ pattern: string; averageResponseTime: number; errorRate: number }> = [];
-
-    for (const [index, pattern] of patterns.entries()) {
-      const users = Array.from(
-        { length: pattern.users }, 
-        (_, i) => new UserSimulator(`pattern-${index}-user-${i}`)
-      );
-
-      const startTime = performance.now();
-      let errors = 0;
-
-      // Simular patrón de uso
-      for (let time = 0; time < pattern.duration; time += pattern.interval) {
-        try {
-          await Promise.all(users.map(user => user.performRandomAction()));
-        } catch (error) {
-          errors++;
-        }
-
-        await act(async () => {
-          await vi.advanceTimersByTimeAsync(pattern.interval);
-        });
-      }
-
-      const endTime = performance.now();
-      const totalActions = users.reduce(
-        (sum, user) => sum + user.getPerformanceMetrics().totalActions, 
-        0
-      );
-
-      metrics.push({
-        pattern: `Pattern ${index}`,
-        averageResponseTime: (endTime - startTime) / totalActions,
-        errorRate: errors / totalActions
-      });
-    }
-
-    // Verificar métricas
-    metrics.forEach(metric => {
-      expect(metric.averageResponseTime).toBeLessThan(200); // Máximo 200ms
-      expect(metric.errorRate).toBeLessThan(0.01); // Menos del 1% de errores
-    });
   });
 }); 

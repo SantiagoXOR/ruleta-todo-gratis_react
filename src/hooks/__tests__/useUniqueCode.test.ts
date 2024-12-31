@@ -31,6 +31,9 @@ describe('useUniqueCode', () => {
       data: {
         totalCodes: 100,
         usedCodes: 30,
+        expiredCodes: 10,
+        activeCodesByPrize: [],
+        recentActivity: []
       },
     };
 
@@ -69,8 +72,8 @@ describe('useUniqueCode', () => {
     const mockCodes = {
       success: true,
       data: {
-        codes: [{ id: 1, code: 'ABC123' }],
-        pagination: { page: 1, totalPages: 2 },
+        codes: [{ id: 1, code: 'ABC123', prizeId: 1, createdAt: Date.now(), expiresAt: Date.now() + 86400000, isUsed: false }],
+        pagination: { page: 1, totalPages: 2, totalItems: 3 },
       },
     };
 
@@ -88,7 +91,14 @@ describe('useUniqueCode', () => {
   it('genera códigos correctamente', async () => {
     const mockNewCode = {
       success: true,
-      data: { id: 1, code: 'XYZ789' },
+      data: { 
+        id: 1, 
+        code: 'XYZ789', 
+        prizeId: 1, 
+        createdAt: Date.now(), 
+        expiresAt: Date.now() + 86400000, 
+        isUsed: false 
+      },
     };
 
     (uniqueCodeService.generateCode as any).mockResolvedValue(mockNewCode);
@@ -106,7 +116,10 @@ describe('useUniqueCode', () => {
   it('exporta códigos correctamente', async () => {
     const mockExport = {
       success: true,
-      data: { url: 'export.csv' },
+      data: { 
+        url: 'export.csv',
+        filename: 'codes.csv'
+      },
     };
 
     (uniqueCodeService.exportCodes as any).mockResolvedValue(mockExport);
@@ -118,6 +131,8 @@ describe('useUniqueCode', () => {
       exportResult = await result.current.exportCodes({
         format: 'csv',
         dateRange: 'week',
+        includeUsed: true,
+        includeExpired: false
       });
     });
 
@@ -128,8 +143,8 @@ describe('useUniqueCode', () => {
     const mockCodes = {
       success: true,
       data: {
-        codes: [{ id: 1, code: 'ABC123' }],
-        pagination: { page: 1, totalPages: 2 },
+        codes: [{ id: 1, code: 'ABC123', prizeId: 1, createdAt: Date.now(), expiresAt: Date.now() + 86400000, isUsed: false }],
+        pagination: { page: 1, totalPages: 2, totalItems: 3 },
       },
     };
 
@@ -150,7 +165,13 @@ describe('useUniqueCode', () => {
   it('cambia rango de tiempo y actualiza estadísticas', async () => {
     const mockStats = {
       success: true,
-      data: { totalCodes: 200 },
+      data: { 
+        totalCodes: 200,
+        usedCodes: 50,
+        expiredCodes: 20,
+        activeCodesByPrize: [],
+        recentActivity: []
+      },
     };
 
     (uniqueCodeService.getStatistics as any).mockResolvedValue(mockStats);
@@ -195,16 +216,16 @@ describe('useUniqueCode', () => {
     const mockCodes1 = {
       success: true,
       data: {
-        codes: [{ id: 1, code: 'ABC123' }],
-        pagination: { page: 1, totalPages: 2 },
+        codes: [{ id: 1, code: 'ABC123', prizeId: 1, createdAt: Date.now(), expiresAt: Date.now() + 86400000, isUsed: false }],
+        pagination: { page: 1, totalPages: 2, totalItems: 3 },
       },
     };
 
     const mockCodes2 = {
       success: true,
       data: {
-        codes: [{ id: 2, code: 'DEF456' }],
-        pagination: { page: 2, totalPages: 2 },
+        codes: [{ id: 2, code: 'DEF456', prizeId: 1, createdAt: Date.now(), expiresAt: Date.now() + 86400000, isUsed: false }],
+        pagination: { page: 2, totalPages: 2, totalItems: 3 },
       },
     };
 

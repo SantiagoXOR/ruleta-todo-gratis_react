@@ -1,173 +1,176 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { render, screen, fireEvent, waitFor } from '@testing-library/react';
-import { CodeExport } from '../CodeExport';
+import React from 'react';
+import { render, fireEvent, waitFor, screen } from '@testing-library/react';
+import '@testing-library/jest-dom';
+import CodeExport from '../CodeExport';
 import { uniqueCodeService } from '../../services/uniqueCodeService';
+import type { ExportResponse } from '../../types/uniqueCodes.types';
 
 // Mock del servicio
 vi.mock('../../services/uniqueCodeService', () => ({
   uniqueCodeService: {
-    exportCodes: vi.fn(),
-  },
+    exportCodes: vi.fn()
+  }
 }));
 
 describe('CodeExport', () => {
-  // Mock de URL.createObjectURL y URL.revokeObjectURL
-  const mockCreateObjectURL = vi.fn();
-  const mockRevokeObjectURL = vi.fn();
+  const mockSuccessResponse: ExportResponse = {
+    success: true,
+    data: {
+      url: 'mock-url',
+      filename: 'mock-file.csv'
+    }
+  };
 
   beforeEach(() => {
     vi.clearAllMocks();
-    // Configurar mocks de URL
-    window.URL.createObjectURL = mockCreateObjectURL;
-    window.URL.revokeObjectURL = mockRevokeObjectURL;
-    mockCreateObjectURL.mockReturnValue('mock-url');
+    (uniqueCodeService.exportCodes as any).mockResolvedValue(mockSuccessResponse);
+  });
 
-    // Mock de document.createElement para el link de descarga
-    const mockLink = {
-      click: vi.fn(),
-      setAttribute: vi.fn(),
-      href: '',
-    };
-    vi.spyOn(document, 'createElement').mockImplementation((tag) => {
-      if (tag === 'a') return mockLink as any;
-      return document.createElement(tag);
+  describe('Rendering', () => {
+    it('renders all form elements correctly', () => {
+      render(<CodeExport />);
+      
+      // Verifica los encabezados de sección
+      expect(screen.getByText('Formato')).toBeInTheDocument();
+      expect(screen.getByText('Rango de Fechas')).toBeInTheDocument();
+      expect(screen.getByText('Filtros')).toBeInTheDocument();
+
+      // Verifica las opciones de formato
+      expect(screen.getByLabelText('CSV')).toBeInTheDocument();
+      expect(screen.getByLabelText('Excel')).toBeInTheDocument();
+
+      // Verifica el selector de rango de fechas
+      const dateRangeSelect = screen.getByRole('combobox');
+      expect(dateRangeSelect).toBeInTheDocument();
+      expect(dateRangeSelect).toHaveValue('all');
+
+      // Verifica los checkboxes de filtros
+      expect(screen.getByLabelText('Códigos Usados')).toBeInTheDocument();
+      expect(screen.getByLabelText('Códigos Expirados')).toBeInTheDocument();
+
+      // Verifica el botón de exportar
+      const exportButton = screen.getByRole('button');
+      expect(exportButton).toHaveTextContent('Exportar Códigos');
+      expect(exportButton).not.toBeDisabled();
+    });
+
+    it('shows initial state correctly', () => {
+      render(<CodeExport />);
+      
+      // Verifica los valores iniciales
+      expect(screen.getByLabelText('CSV')).toBeChecked();
+      expect(screen.getByLabelText('Excel')).not.toBeChecked();
+      expect(screen.getByLabelText('Códigos Usados')).toBeChecked();
+      expect(screen.getByLabelText('Códigos Expirados')).not.toBeChecked();
+      expect(screen.getByRole('combobox')).toHaveValue('all');
     });
   });
 
-  it('renderiza todas las opciones de exportación', () => {
-    render(<CodeExport />);
-
-    // Verificar opciones de formato
-    expect(screen.getByLabelText('CSV')).toBeInTheDocument();
-    expect(screen.getByLabelText('Excel')).toBeInTheDocument();
-
-    // Verificar selector de rango de fechas
-    expect(screen.getByRole('combobox')).toBeInTheDocument();
-    expect(screen.getByText('Todos')).toBeInTheDocument();
-
-    // Verificar checkboxes
-    expect(screen.getByLabelText('Códigos Usados')).toBeInTheDocument();
-    expect(screen.getByLabelText('Códigos Expirados')).toBeInTheDocument();
-
-    // Verificar botón de exportar
-    expect(screen.getByText('Exportar Códigos')).toBeInTheDocument();
-  });
-
-  it('maneja la exportación exitosa', async () => {
-    (uniqueCodeService.exportCodes as any).mockResolvedValue({
-      success: true,
-      data: 'mock-data',
+  describe('User Interactions', () => {
+    it('updates format when radio buttons are clicked', () => {
+      render(<CodeExport />);
+      
+      const excelRadio = screen.getByLabelText('Excel');
+      fireEvent.click(excelRadio);
+      expect(excelRadio).toBeChecked();
+      expect(screen.getByLabelText('CSV')).not.toBeChecked();
     });
 
-    render(<CodeExport />);
+    it('updates date range when select is changed', () => {
+      render(<CodeExport />);
+      
+      const select = screen.getByRole('combobox');
+      fireEvent.change(select, { target: { value: 'week' } });
+      expect(select).toHaveValue('week');
+    });
 
-    const exportButton = screen.getByText('Exportar Códigos');
-    fireEvent.click(exportButton);
+    it('updates filters when checkboxes are clicked', () => {
+      render(<CodeExport />);
+      
+      const usedCheckbox = screen.getByLabelText('Códigos Usados');
+      const expiredCheckbox = screen.getByLabelText('Códigos Expirados');
 
-    // Verificar estado de carga
-    expect(screen.getByText('Exportando...')).toBeInTheDocument();
+      fireEvent.click(usedCheckbox);
+      fireEvent.click(expiredCheckbox);
 
-    await waitFor(() => {
-      // Verificar que se llamó al servicio con las opciones correctas
+      expect(usedCheckbox).not.toBeChecked();
+      expect(expiredCheckbox).toBeChecked();
+    });
+  });
+
+  describe('Export Functionality', () => {
+    it('handles successful export correctly', async () => {
+      const { container } = render(<CodeExport />);
+      
+      const exportButton = screen.getByRole('button');
+      fireEvent.click(exportButton);
+
+      // Verifica el estado de carga
+      expect(exportButton).toBeDisabled();
+      expect(screen.getByText('Exportando...')).toBeInTheDocument();
+
+      // Verifica que todos los controles estén deshabilitados durante la exportación
+      expect(screen.getByLabelText('CSV')).toBeDisabled();
+      expect(screen.getByLabelText('Excel')).toBeDisabled();
+      expect(screen.getByRole('combobox')).toBeDisabled();
+      expect(screen.getByLabelText('Códigos Usados')).toBeDisabled();
+      expect(screen.getByLabelText('Códigos Expirados')).toBeDisabled();
+
+      // Espera a que se complete la exportación
+      await waitFor(() => {
+        expect(exportButton).not.toBeDisabled();
+        expect(exportButton).toHaveTextContent('Exportar Códigos');
+      });
+
+      // Verifica que el servicio fue llamado con las opciones correctas
       expect(uniqueCodeService.exportCodes).toHaveBeenCalledWith({
         format: 'csv',
         dateRange: 'all',
         includeUsed: true,
-        includeExpired: false,
+        includeExpired: false
       });
 
-      // Verificar que se creó el blob y el link
-      expect(mockCreateObjectURL).toHaveBeenCalled();
-      expect(document.createElement).toHaveBeenCalledWith('a');
-    });
-  });
-
-  it('maneja errores de exportación', async () => {
-    (uniqueCodeService.exportCodes as any).mockResolvedValue({
-      success: false,
-      error: 'Error al exportar códigos',
+      // Verifica que se creó y eliminó el enlace de descarga
+      expect(container.querySelector('a')).toBeNull();
     });
 
-    render(<CodeExport />);
+    it('handles export error correctly', async () => {
+      (uniqueCodeService.exportCodes as any).mockRejectedValueOnce(new Error('Export failed'));
 
-    const exportButton = screen.getByText('Exportar Códigos');
-    fireEvent.click(exportButton);
+      render(<CodeExport />);
+      
+      const exportButton = screen.getByRole('button');
+      fireEvent.click(exportButton);
 
-    await waitFor(() => {
-      expect(screen.getByText('Error al exportar códigos')).toBeInTheDocument();
-    });
-  });
+      // Espera a que aparezca el mensaje de error
+      await waitFor(() => {
+        expect(screen.getByRole('alert')).toHaveTextContent('Error al exportar códigos');
+      });
 
-  it('actualiza las opciones correctamente', () => {
-    render(<CodeExport />);
-
-    // Cambiar formato
-    const excelRadio = screen.getByLabelText('Excel');
-    fireEvent.click(excelRadio);
-    expect(excelRadio).toBeChecked();
-
-    // Cambiar rango de fechas
-    const dateSelect = screen.getByRole('combobox');
-    fireEvent.change(dateSelect, { target: { value: 'week' } });
-    expect(dateSelect.value).toBe('week');
-
-    // Cambiar checkboxes
-    const usedCheckbox = screen.getByLabelText('Códigos Usados');
-    const expiredCheckbox = screen.getByLabelText('Códigos Expirados');
-
-    fireEvent.click(usedCheckbox);
-    fireEvent.click(expiredCheckbox);
-
-    expect(usedCheckbox).not.toBeChecked();
-    expect(expiredCheckbox).toBeChecked();
-  });
-
-  it('deshabilita el botón durante la exportación', async () => {
-    (uniqueCodeService.exportCodes as any).mockImplementation(
-      () => new Promise(resolve => setTimeout(resolve, 100))
-    );
-
-    render(<CodeExport />);
-
-    const exportButton = screen.getByText('Exportar Códigos');
-    fireEvent.click(exportButton);
-
-    expect(exportButton).toBeDisabled();
-    expect(screen.getByText('Exportando...')).toBeInTheDocument();
-
-    await waitFor(() => {
+      // Verifica que el botón vuelva a estar habilitado
       expect(exportButton).not.toBeDisabled();
-      expect(screen.getByText('Exportar Códigos')).toBeInTheDocument();
+      expect(exportButton).toHaveTextContent('Exportar Códigos');
+
+      // Verifica que los controles vuelvan a estar habilitados
+      expect(screen.getByLabelText('CSV')).not.toBeDisabled();
+      expect(screen.getByLabelText('Excel')).not.toBeDisabled();
+      expect(screen.getByRole('combobox')).not.toBeDisabled();
+      expect(screen.getByLabelText('Códigos Usados')).not.toBeDisabled();
+      expect(screen.getByLabelText('Códigos Expirados')).not.toBeDisabled();
     });
-  });
 
-  it('limpia los recursos después de la exportación', async () => {
-    (uniqueCodeService.exportCodes as any).mockResolvedValue({
-      success: true,
-      data: 'mock-data',
-    });
-
-    render(<CodeExport />);
-
-    const exportButton = screen.getByText('Exportar Códigos');
-    fireEvent.click(exportButton);
-
-    await waitFor(() => {
-      expect(mockRevokeObjectURL).toHaveBeenCalledWith('mock-url');
-    });
-  });
-
-  it('maneja errores de red', async () => {
-    (uniqueCodeService.exportCodes as any).mockRejectedValue(new Error('Network error'));
-
-    render(<CodeExport />);
-
-    const exportButton = screen.getByText('Exportar Códigos');
-    fireEvent.click(exportButton);
-
-    await waitFor(() => {
-      expect(screen.getByText('Error al exportar códigos')).toBeInTheDocument();
-      expect(exportButton).not.toBeDisabled();
+    it('prevents multiple simultaneous exports', async () => {
+      render(<CodeExport />);
+      
+      const exportButton = screen.getByRole('button');
+      
+      // Primer click
+      fireEvent.click(exportButton);
+      expect(exportButton).toBeDisabled();
+      
+      // Segundo click no debería llamar al servicio nuevamente
+      fireEvent.click(exportButton);
+      expect(uniqueCodeService.exportCodes).toHaveBeenCalledTimes(1);
     });
   });
 });

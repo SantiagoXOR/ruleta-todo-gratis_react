@@ -8,48 +8,56 @@ import { prizeService } from '../services/prizeService';
 
 const prizes: Prize[] = [
   {
+    id: 1,
     name: "TODO GRATIS",
     description: "Bonificamos el 100% de tu compra hasta $30.000",
     icon: <Icons.Gift />,
     color: '#FF6B6B'
   },
   {
+    id: 2,
     name: "5% DESCUENTO",
     description: "En toda la tienda",
     icon: <Icons.Tag />,
     color: '#FF8B94'
   },
   {
+    id: 3,
     name: "BONO EXTRA",
     description: "Cupón de $10.000",
     icon: <Icons.Card />,
     color: '#FFD93D'
   },
   {
+    id: 4,
     name: "15% DESCUENTO",
     description: "En productos seleccionados",
     icon: <Icons.Tag />,
     color: '#6C5CE7'
   },
   {
+    id: 5,
     name: "KIT DE PINTURA",
     description: "Con compras mayores a $50.000",
     icon: <Icons.Paint />,
     color: '#4ECDC4'
   },
   {
+    id: 6,
     name: "REGALO SORPRESA",
     description: "En tu próxima compra",
     icon: <Icons.Gift />,
     color: '#A8E6CF'
   },
   {
+    id: 7,
     name: "20% DESCUENTO",
     description: "En pinturas premium",
     icon: <Icons.Star />,
     color: '#FF6B6B'
   },
   {
+    id: 8,
     name: "10% DESCUENTO",
     description: "En toda la tienda",
     icon: <Icons.Tag />,
