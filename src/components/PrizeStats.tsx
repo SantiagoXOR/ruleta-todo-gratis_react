@@ -30,8 +30,8 @@ const PrizeStats: React.FC<PrizeStatsProps> = ({ className = '', style = {} }) =
         ]);
 
         setGeneralStats(general);
-        setTimeSeriesData(timeSeries);
-        setDistributionData(distribution);
+        setTimeSeriesData(timeSeries as any);
+        setDistributionData(distribution as any);
       } catch (err) {
         setError(err instanceof Error ? err : new Error('Error al cargar las estadísticas'));
       } finally {

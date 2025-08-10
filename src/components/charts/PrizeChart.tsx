@@ -112,7 +112,7 @@ const PrizeChart: React.FC<PrizeChartProps> = ({
   };
 
   // Preparar datos según el tipo de gráfico
-  const prepareTimeSeriesData = (timeStats: TimeStats[]): ChartData<'line' | 'bar'> => ({
+  const prepareTimeSeriesData = (timeStats: TimeStats[]): any => ({
     labels: timeStats.map(stat => new Date(stat.date).toLocaleDateString()),
     datasets: [
       {

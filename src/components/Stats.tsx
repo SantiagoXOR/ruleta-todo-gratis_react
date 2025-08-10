@@ -57,13 +57,13 @@ const Stats: React.FC = () => {
 
       <motion.div className="stats-grid" variants={itemVariants}>
         <div className="stat-card total-spins">
-          <Icons.Star size={32} />
+          <Icons.Star className="w-8 h-8" />
           <h3>Total de Giros</h3>
           <p className="stat-value">{stats.totalSpins}</p>
         </div>
 
         <div className="stat-card claimed-prizes">
-          <Icons.Gift size={32} />
+          <Icons.Gift className="w-8 h-8" />
           <h3>Premios Canjeados</h3>
           <p className="stat-value">{stats.claimedPrizes}</p>
           <p className="stat-subtitle">
@@ -77,7 +77,7 @@ const Stats: React.FC = () => {
         {Object.entries(stats.prizesWon).map(([prizeId, prize]) => (
           <div key={prizeId} className="prize-stat-row">
             <div className="prize-info">
-              {Number(prizeId) === 5 ? <Icons.Gift size={24} /> : <Icons.Tag size={24} />}
+              {Number(prizeId) === 5 ? <Icons.Gift className="w-6 h-6" /> : <Icons.Tag className="w-6 h-6" />}
               <span className="prize-name">{prize.name}</span>
             </div>
             <div className="prize-details">

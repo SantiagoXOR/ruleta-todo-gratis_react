@@ -78,8 +78,18 @@ export const useAccessibility = (options: AccessibilityOptions = {}) => {
     if (!element) return;
 
     // Aplicar clases según las preferencias
-    element.classList.toggle('high-contrast', highContrast);
-    element.classList.toggle('reduced-motion', reducedMotion);
+    if (highContrast) {
+      element.classList.add('high-contrast');
+    } else {
+      element.classList.remove('high-contrast');
+    }
+
+    if (reducedMotion) {
+      element.classList.add('reduced-motion');
+    } else {
+      element.classList.remove('reduced-motion');
+    }
+
     element.setAttribute('data-font-size', fontSize);
 
     // Configurar atributos ARIA
@@ -101,12 +111,14 @@ export const useAccessibility = (options: AccessibilityOptions = {}) => {
 
     return () => {
       // Limpiar atributos al desmontar
-      element.removeAttribute('aria-label');
-      element.removeAttribute('aria-describedby');
-      element.removeAttribute('role');
-      element.removeAttribute('tabindex');
-      element.removeAttribute('data-font-size');
-      element.classList.remove('high-contrast', 'reduced-motion');
+      if (element.parentNode) {
+        element.removeAttribute('aria-label');
+        element.removeAttribute('aria-describedby');
+        element.removeAttribute('role');
+        element.removeAttribute('tabindex');
+        element.removeAttribute('data-font-size');
+        element.classList.remove('high-contrast', 'reduced-motion');
+      }
     };
   }, [ariaLabel, ariaDescribedBy, role, tabIndex, focusable, fontSize, highContrast, reducedMotion]);
 

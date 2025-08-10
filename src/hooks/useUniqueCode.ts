@@ -1,12 +1,9 @@
 import { useState, useCallback, useEffect } from 'react';
 import { uniqueCodeService } from '../services/uniqueCodeService';
 import { useNotification } from './useNotification';
-import { 
-  UniqueCode, 
-  CodeStatistics, 
-  ListCodesResponse, 
-  StatisticsResponse,
-  ExportResponse,
+import {
+  UniqueCode,
+  CodeStatistics,
   ExportOptions
 } from '../types/uniqueCodes.types';
 
@@ -66,8 +63,8 @@ export const useUniqueCode = (options: UseUniqueCodeOptions = {}) => {
       const response = await uniqueCodeService.listCodes(updatedFilters);
 
       if (response.success && response.data) {
-        setCodes(prevCodes => 
-          resetPage ? response.data.codes : [...prevCodes, ...response.data.codes]
+        setCodes(prevCodes =>
+          resetPage ? response.data!.codes : [...prevCodes, ...response.data!.codes]
         );
         setFilters(prev => ({
           ...prev,
@@ -95,7 +92,7 @@ export const useUniqueCode = (options: UseUniqueCodeOptions = {}) => {
       const response = await uniqueCodeService.generateCode(prizeId);
 
       if (response.success && response.data) {
-        setCodes(prevCodes => [response.data, ...prevCodes]);
+        setCodes(prevCodes => [response.data!, ...prevCodes]);
         showNotification('success', 'Código generado exitosamente');
         await loadStatistics(); // Actualizar estadísticas
         return response.data;
@@ -126,8 +123,9 @@ export const useUniqueCode = (options: UseUniqueCodeOptions = {}) => {
         showNotification('success', 'Códigos exportados exitosamente');
         return response.data;
       } else {
-        setError(response.error || 'Error al exportar códigos');
-        showNotification('error', 'Error al exportar códigos');
+        const errorMessage = response.error || 'Error al exportar códigos';
+        setError(errorMessage);
+        showNotification('error', errorMessage);
         return null;
       }
     } catch (err) {

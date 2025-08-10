@@ -99,7 +99,7 @@ export const useAppStore = create<AppState>()(
 
             try {
               const response = await uniqueCodeService.listCodes(filters);
-              if (response.success) {
+              if (response.success && response.data) {
                 set({ codes: response.data.codes });
               } else {
                 set({ error: response.error || 'Error al cargar códigos' });

@@ -13,6 +13,7 @@ import {
 } from 'chart.js';
 import { Bar, Line, Pie } from 'react-chartjs-2';
 import { uniqueCodeService } from '../services/uniqueCodeService';
+import { CodeStatistics as CodeStatsType } from '../types/uniqueCodes.types';
 import './CodeStatistics.css';
 
 // Registrar componentes de Chart.js
@@ -29,10 +30,10 @@ ChartJS.register(
 );
 
 interface CodeStats {
-  totalCodes: number;
-  usedCodes: number;
-  expiredCodes: number;
-  validCodes: number;
+  total: number;
+  used: number;
+  expired: number;
+  active: number;
   usageByDay: {
     date: string;
     count: number;
@@ -44,7 +45,7 @@ interface CodeStats {
 }
 
 export const CodeStatistics: React.FC = () => {
-  const [stats, setStats] = useState<CodeStats | null>(null);
+  const [stats, setStats] = useState<CodeStatsType | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [timeRange, setTimeRange] = useState<'week' | 'month' | 'year'>('week');
@@ -89,11 +90,11 @@ export const CodeStatistics: React.FC = () => {
   }
 
   const usageOverTimeData = {
-    labels: stats.usageByDay.map(day => day.date),
+    labels: stats.usageByDay?.map(day => day.date) || [],
     datasets: [
       {
         label: 'Códigos Usados',
-        data: stats.usageByDay.map(day => day.count),
+        data: stats.usageByDay?.map(day => day.count) || [],
         borderColor: '#1a73e8',
         backgroundColor: 'rgba(26, 115, 232, 0.1)',
         fill: true,
@@ -102,11 +103,11 @@ export const CodeStatistics: React.FC = () => {
   };
 
   const usageByPrizeData = {
-    labels: stats.usageByPrize.map(prize => prize.prizeName),
+    labels: stats.usageByPrize?.map(prize => prize.prizeName) || [],
     datasets: [
       {
         label: 'Uso por Premio',
-        data: stats.usageByPrize.map(prize => prize.count),
+        data: stats.usageByPrize?.map(prize => prize.count) || [],
         backgroundColor: [
           'rgba(255, 99, 132, 0.8)',
           'rgba(54, 162, 235, 0.8)',
@@ -122,7 +123,7 @@ export const CodeStatistics: React.FC = () => {
     labels: ['Válidos', 'Usados', 'Expirados'],
     datasets: [
       {
-        data: [stats.validCodes, stats.usedCodes, stats.expiredCodes],
+        data: [stats.active, stats.used, stats.expired],
         backgroundColor: [
           'rgba(75, 192, 192, 0.8)',
           'rgba(54, 162, 235, 0.8)',
@@ -161,19 +162,19 @@ export const CodeStatistics: React.FC = () => {
       <div className="stats-summary">
         <div className="stat-card">
           <h3>Total de Códigos</h3>
-          <p>{stats.totalCodes}</p>
+          <p>{stats.total}</p>
         </div>
         <div className="stat-card">
           <h3>Códigos Válidos</h3>
-          <p>{stats.validCodes}</p>
+          <p>{stats.active}</p>
         </div>
         <div className="stat-card">
           <h3>Códigos Usados</h3>
-          <p>{stats.usedCodes}</p>
+          <p>{stats.used}</p>
         </div>
         <div className="stat-card">
           <h3>Códigos Expirados</h3>
-          <p>{stats.expiredCodes}</p>
+          <p>{stats.expired}</p>
         </div>
       </div>
 

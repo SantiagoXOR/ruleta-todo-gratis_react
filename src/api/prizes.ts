@@ -20,39 +20,26 @@ export const prizesApi = {
       const response = await axios.get(`${API_BASE_URL}/prizes/${code}`);
       return {
         success: true,
-        data: response.data
+        data: response.data as Prize
       };
-    } catch (error) {
-      if (axios.isAxiosError(error)) {
-        return {
-          success: false,
-          error: error.response?.data?.message || 'Error al verificar el premio'
-        };
-      }
+    } catch (error: any) {
       return {
         success: false,
-        error: 'Error inesperado al verificar el premio'
+        error: error.response?.data?.message || error.message || 'Error al verificar el premio'
       };
     }
   },
 
   async claimPrize(code: string): Promise<ClaimResponse> {
     try {
-      const response = await axios.post(`${API_BASE_URL}/prizes/${code}/claim`);
+      await axios.post(`${API_BASE_URL}/prizes/${code}/claim`);
       return {
-        success: true,
-        data: response.data
+        success: true
       };
-    } catch (error) {
-      if (axios.isAxiosError(error)) {
-        return {
-          success: false,
-          error: error.response?.data?.message || 'Error al reclamar el premio'
-        };
-      }
+    } catch (error: any) {
       return {
         success: false,
-        error: 'Error inesperado al reclamar el premio'
+        error: error.response?.data?.message || error.message || 'Error al reclamar el premio'
       };
     }
   },
@@ -60,7 +47,7 @@ export const prizesApi = {
   async getAvailablePrizes(): Promise<Prize[]> {
     try {
       const response = await axios.get(`${API_BASE_URL}/prizes/available`);
-      return response.data;
+      return response.data as Prize[];
     } catch (error) {
       console.error('Error fetching available prizes:', error);
       throw error;
@@ -70,7 +57,7 @@ export const prizesApi = {
   async getClaimedPrizes(): Promise<Prize[]> {
     try {
       const response = await axios.get(`${API_BASE_URL}/prizes/claimed`);
-      return response.data;
+      return response.data as Prize[];
     } catch (error) {
       console.error('Error fetching claimed prizes:', error);
       throw error;

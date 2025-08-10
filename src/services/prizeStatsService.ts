@@ -156,4 +156,9 @@ class PrizeStatsService {
   }
 }
 
-export const prizeStatsService = new PrizeStatsService(); 
+export const prizeStatsService = new PrizeStatsService();
+
+// Exportar funciones individuales para compatibilidad
+export const getGeneralStats = (filter?: StatsFilter) => prizeStatsService.getGeneralStats(filter);
+export const getTimeSeriesStats = (filter?: StatsFilter) => prizeStatsService.getTimeSeriesStats(filter);
+export const getPrizeDistribution = (filter?: StatsFilter) => prizeStatsService.getPrizeDistribution(filter);

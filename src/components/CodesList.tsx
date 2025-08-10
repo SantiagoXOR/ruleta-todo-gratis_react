@@ -61,7 +61,7 @@ export const CodesList: React.FC<CodesListProps> = ({ prizeId, showOnlyValid = f
 
       if (response.success) {
         setCodes(response.data.codes);
-        setTotalPages(response.data.totalPages);
+        setTotalPages(response.data.pagination?.totalPages || 1);
       } else {
         setError(response.error || 'Error al cargar los códigos');
       }

@@ -4,6 +4,9 @@ export interface UniqueCode {
   timestamp: number;
   expiresAt: number;
   isUsed: boolean;
+  createdAt?: string;
+  usedAt?: string;
+  usedBy?: string;
 }
 
 export interface CodeStatistics {
@@ -11,6 +14,15 @@ export interface CodeStatistics {
   used: number;
   expired: number;
   active: number;
+  timeRange?: string;
+  usageByDay?: Array<{
+    date: string;
+    count: number;
+  }>;
+  usageByPrize?: Array<{
+    prizeName: string;
+    count: number;
+  }>;
 }
 
 export interface ListCodesResponse {

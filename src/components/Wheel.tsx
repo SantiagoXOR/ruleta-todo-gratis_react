@@ -251,3 +251,4 @@ const Wheel: React.FC = () => {
 };
 
 export default Wheel;
+export { Wheel };

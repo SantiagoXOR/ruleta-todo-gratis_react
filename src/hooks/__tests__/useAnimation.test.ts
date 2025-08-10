@@ -105,7 +105,6 @@ describe('useAnimation', () => {
   });
 
   it('debe limpiar la animación al desmontar', () => {
-    const onUpdate = vi.fn();
     const { unmount } = renderHook(() => useAnimation());
 
     // Verificar que cancelAnimationFrame es llamado al desmontar

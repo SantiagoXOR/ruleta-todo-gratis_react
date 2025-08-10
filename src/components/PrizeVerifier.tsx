@@ -81,7 +81,7 @@ function PrizeVerifier() {
   const renderPrizeInfo = () => {
     if (!prize) return null;
 
-    const timeToExpiry = prizeService.getTimeToExpiry(prize);
+    const timeToExpiry = prizeService.getTimeToExpiry(prize as any);
     const expiryDate = new Date(prize.expiresAt).toLocaleString();
 
     return (

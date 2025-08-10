@@ -1,5 +1,13 @@
 import React from 'react';
-import { IconProps } from '../types/icons.types';
+
+interface IconProps {
+  className?: string;
+  size?: number;
+  width?: number | string;
+  height?: number | string;
+  fill?: string;
+  stroke?: string;
+}
 
 const Users: React.FC<IconProps> = ({ className }) => (
   <svg className={className} viewBox="0 0 24 24" width="24" height="24" fill="currentColor">
@@ -121,6 +129,115 @@ const Ban: React.FC<IconProps> = ({ className }) => (
   </svg>
 );
 
+// Iconos adicionales faltantes
+const Close: React.FC<IconProps> = ({ className }) => (
+  <svg className={className} viewBox="0 0 24 24" width="24" height="24" fill="currentColor">
+    <path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/>
+  </svg>
+);
+
+const File: React.FC<IconProps> = ({ className }) => (
+  <svg className={className} viewBox="0 0 24 24" width="24" height="24" fill="currentColor">
+    <path d="M14,2H6A2,2 0 0,0 4,4V20A2,2 0 0,0 6,22H18A2,2 0 0,0 20,20V8L14,2M18,20H6V4H13V9H18V20Z"/>
+  </svg>
+);
+
+const Excel: React.FC<IconProps> = ({ className }) => (
+  <svg className={className} viewBox="0 0 24 24" width="24" height="24" fill="currentColor">
+    <path d="M14,2H6A2,2 0 0,0 4,4V20A2,2 0 0,0 6,22H18A2,2 0 0,0 20,20V8L14,2M18,20H6V4H13V9H18V20Z"/>
+  </svg>
+);
+
+const PDF: React.FC<IconProps> = ({ className }) => (
+  <svg className={className} viewBox="0 0 24 24" width="24" height="24" fill="currentColor">
+    <path d="M14,2H6A2,2 0 0,0 4,4V20A2,2 0 0,0 6,22H18A2,2 0 0,0 20,20V8L14,2M18,20H6V4H13V9H18V20Z"/>
+  </svg>
+);
+
+const Clock: React.FC<IconProps> = ({ className }) => (
+  <svg className={className} viewBox="0 0 24 24" width="24" height="24" fill="currentColor">
+    <path d="M12,2A10,10 0 0,0 2,12A10,10 0 0,0 12,22A10,10 0 0,0 22,12A10,10 0 0,0 12,2M16.2,16.2L11,13V7H12.5V12.2L17,14.7L16.2,16.2Z"/>
+  </svg>
+);
+
+const Info: React.FC<IconProps> = ({ className }) => (
+  <svg className={className} viewBox="0 0 24 24" width="24" height="24" fill="currentColor">
+    <path d="M13,9H11V7H13M13,17H11V11H13M12,2A10,10 0 0,0 2,12A10,10 0 0,0 12,22A10,10 0 0,0 22,12A10,10 0 0,0 12,2Z"/>
+  </svg>
+);
+
+const Bell: React.FC<IconProps> = ({ className }) => (
+  <svg className={className} viewBox="0 0 24 24" width="24" height="24" fill="currentColor">
+    <path d="M21,19V20H3V19L5,17V11C5,7.9 7.03,5.17 10,4.29C10,4.19 10,4.1 10,4A2,2 0 0,1 12,2A2,2 0 0,1 14,4C14,4.1 14,4.19 14,4.29C16.97,5.17 19,7.9 19,11V17L21,19M14,21A2,2 0 0,1 12,23A2,2 0 0,1 10,21"/>
+  </svg>
+);
+
+const Trash: React.FC<IconProps> = ({ className }) => (
+  <svg className={className} viewBox="0 0 24 24" width="24" height="24" fill="currentColor">
+    <path d="M19,4H15.5L14.5,3H9.5L8.5,4H5V6H19M6,19A2,2 0 0,0 8,21H16A2,2 0 0,0 18,19V7H6V19Z"/>
+  </svg>
+);
+
+const Inbox: React.FC<IconProps> = ({ className }) => (
+  <svg className={className} viewBox="0 0 24 24" width="24" height="24" fill="currentColor">
+    <path d="M19,3H5A2,2 0 0,0 3,5V19A2,2 0 0,0 5,21H19A2,2 0 0,0 21,19V5A2,2 0 0,0 19,3M19,19H5V5H19V19M17,17H7V15H17V17Z"/>
+  </svg>
+);
+
+const Trend: React.FC<IconProps> = ({ className }) => (
+  <svg className={className} viewBox="0 0 24 24" width="24" height="24" fill="currentColor">
+    <path d="M16,6L18.29,8.29L13.41,13.17L9.41,9.17L2,16.59L3.41,18L9.41,12L13.41,16L19.71,9.71L22,12V6H16Z"/>
+  </svg>
+);
+
+const Calendar: React.FC<IconProps> = ({ className }) => (
+  <svg className={className} viewBox="0 0 24 24" width="24" height="24" fill="currentColor">
+    <path d="M19,3H18V1H16V3H8V1H6V3H5A2,2 0 0,0 3,5V19A2,2 0 0,0 5,21H19A2,2 0 0,0 21,19V5A2,2 0 0,0 19,3M19,19H5V8H19V19Z"/>
+  </svg>
+);
+
+const Star: React.FC<IconProps> = ({ className }) => (
+  <svg className={className} viewBox="0 0 24 24" width="24" height="24" fill="currentColor">
+    <path d="M12,17.27L18.18,21L16.54,13.97L22,9.24L14.81,8.62L12,2L9.19,8.62L2,9.24L7.46,13.97L5.82,21L12,17.27Z"/>
+  </svg>
+);
+
+const Home: React.FC<IconProps> = ({ className }) => (
+  <svg className={className} viewBox="0 0 24 24" width="24" height="24" fill="currentColor">
+    <path d="M10,20V14H14V20H19V12H22L12,3L2,12H5V20H10Z"/>
+  </svg>
+);
+
+const Card: React.FC<IconProps> = ({ className }) => (
+  <svg className={className} viewBox="0 0 24 24" width="24" height="24" fill="currentColor">
+    <path d="M20,4H4A2,2 0 0,0 2,6V18A2,2 0 0,0 4,20H20A2,2 0 0,0 22,18V6A2,2 0 0,0 20,4M20,18H4V12H20V18M20,8H4V6H20V8Z"/>
+  </svg>
+);
+
+const Paint: React.FC<IconProps> = ({ className }) => (
+  <svg className={className} viewBox="0 0 24 24" width="24" height="24" fill="currentColor">
+    <path d="M18,4V3A1,1 0 0,0 17,2H5A1,1 0 0,0 4,3V7A1,1 0 0,0 5,8H17A1,1 0 0,0 18,7V6H19V10H9V21A1,1 0 0,0 10,22H12A1,1 0 0,0 13,21V12H21V4H18Z"/>
+  </svg>
+);
+
+const Document: React.FC<IconProps> = ({ className }) => (
+  <svg className={className} viewBox="0 0 24 24" width="24" height="24" fill="currentColor">
+    <path d="M14,2H6A2,2 0 0,0 4,4V20A2,2 0 0,0 6,22H18A2,2 0 0,0 20,20V8L14,2M18,20H6V4H13V9H18V20Z"/>
+  </svg>
+);
+
+const Share: React.FC<IconProps> = ({ className }) => (
+  <svg className={className} viewBox="0 0 24 24" width="24" height="24" fill="currentColor">
+    <path d="M18,16.08C17.24,16.08 16.56,16.38 16.04,16.85L8.91,12.7C8.96,12.47 9,12.24 9,12C9,11.76 8.96,11.53 8.91,11.3L15.96,7.19C16.5,7.69 17.21,8 18,8A3,3 0 0,0 21,5A3,3 0 0,0 18,2A3,3 0 0,0 15,5C15,5.24 15.04,5.47 15.09,5.7L8.04,9.81C7.5,9.31 6.79,9 6,9A3,3 0 0,0 3,12A3,3 0 0,0 6,15C6.79,15 7.5,14.69 8.04,14.19L15.16,18.34C15.11,18.55 15.08,18.77 15.08,19C15.08,20.61 16.39,21.91 18,21.91C19.61,21.91 20.92,20.61 20.92,19A2.92,2.92 0 0,0 18,16.08Z"/>
+  </svg>
+);
+
+const Table: React.FC<IconProps> = ({ className }) => (
+  <svg className={className} viewBox="0 0 24 24" width="24" height="24" fill="currentColor">
+    <path d="M5,4H19A2,2 0 0,1 21,6V18A2,2 0 0,1 19,20H5A2,2 0 0,1 3,18V6A2,2 0 0,1 5,4M5,8V12H11V8H5M13,8V12H19V8H13M5,14V18H11V14H5M13,14V18H19V14H13Z"/>
+  </svg>
+);
+
 export const Icons = {
   History,
   Download,
@@ -141,5 +258,26 @@ export const Icons = {
   Edit,
   Settings,
   Lock,
-  Ban
+  Ban,
+  Close,
+  File,
+  Excel,
+  PDF,
+  Clock,
+  Info,
+  Bell,
+  Trash,
+  Inbox,
+  Trend,
+  Calendar,
+  Star,
+  Home,
+  Card,
+  Paint,
+  Document,
+  Share,
+  Table
 };
+
+// Exportaciones individuales para compatibilidad
+export { History, Download, Spinner, Error, ArrowLeft, ArrowRight };

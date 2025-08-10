@@ -4,6 +4,7 @@ export interface PrizeHistoryItem extends PrizeWithCode {
   redeemedAt?: number;
   redeemedBy?: string;
   storeId?: string;
+  timestamp?: number;
 }
 
 export interface PrizeHistoryResponse {

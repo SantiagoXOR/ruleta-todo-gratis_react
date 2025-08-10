@@ -6,8 +6,8 @@
 
 import React from 'react';
 import { UniqueCode } from '../types/uniqueCodes.types';
-import { formatDistanceToNow } from 'date-fns';
-import { es } from 'date-fns/locale';
+// import { formatDistanceToNow } from 'date-fns';
+// import { es } from 'date-fns/locale/es';
 import './CodeDetails.css';
 
 /**
@@ -49,7 +49,7 @@ interface CodeDetailsProps {
 export const CodeDetails: React.FC<CodeDetailsProps> = ({ code, onUseCode }) => {
   const isExpired = new Date() > new Date(code.expiresAt);
   const timeLeft = !isExpired
-    ? formatDistanceToNow(new Date(code.expiresAt), { locale: es, addSuffix: true })
+    ? `Expira el ${new Date(code.expiresAt).toLocaleDateString('es-ES')}`
     : 'Expirado';
 
   const handleUseCode = async () => {

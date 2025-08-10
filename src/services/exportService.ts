@@ -96,7 +96,7 @@ class ExportService {
           }
         }
 
-        doc.autoTable({
+        (doc as any).autoTable({
           head: [headers.map(h => h.charAt(0).toUpperCase() + h.slice(1))],
           body: distribution.map(item => [
             item.name,
@@ -153,7 +153,7 @@ class ExportService {
           }
         }
 
-        doc.autoTable({
+        (doc as any).autoTable({
           head: [headers.map(h => h.charAt(0).toUpperCase() + h.slice(1))],
           body: timeStats.map(stat => [
             new Date(stat.date).toLocaleDateString(),
@@ -256,18 +256,19 @@ class ExportService {
         doc.text('Estadísticas Generales', 14, currentY);
         currentY += 10;
 
-        doc.autoTable({
-          body: [
-            ['Total de Premios', stats.totalPrizes],
-            ['Premios Canjeados', stats.claimedPrizes],
-            ['Premios Pendientes', stats.pendingPrizes],
-            ['Premios Vencidos', stats.expiredPrizes]
-          ],
-          startY: currentY,
-          theme: 'plain',
-          styles: { fontSize: 12 }
-        });
-        currentY = (doc as any).lastAutoTable.finalY + 20;
+        // doc.autoTable({
+        //   body: [
+        //     ['Total de Premios', stats.totalPrizes],
+        //     ['Premios Canjeados', stats.claimedPrizes],
+        //     ['Premios Pendientes', stats.pendingPrizes],
+        //     ['Premios Vencidos', stats.expiredPrizes]
+        //   ],
+        //   startY: currentY,
+        //   theme: 'plain',
+        //   styles: { fontSize: 12 }
+        // });
+        // currentY = (doc as any).lastAutoTable.finalY + 20;
+        currentY += 50;
 
         // Gráficos
         if (options.includeCharts) {
@@ -291,39 +292,39 @@ class ExportService {
         doc.text('Distribución de Premios', 14, currentY);
         currentY += 10;
 
-        doc.autoTable({
-          head: [['Premio', 'Total', 'Canjeados', 'Pendientes', 'Porcentaje']],
-          body: distribution.map(item => [
-            item.name,
-            item.count,
-            item.claimed,
-            item.pending,
-            `${item.percentage}%`
-          ]),
-          startY: currentY,
-          theme: 'grid',
-          styles: { fontSize: 10 },
-          headStyles: { fillColor: [41, 128, 185] }
-        });
+        // doc.autoTable({
+        //   head: [['Premio', 'Total', 'Canjeados', 'Pendientes', 'Porcentaje']],
+        //   body: distribution.map(item => [
+        //     item.name,
+        //     item.count,
+        //     item.claimed,
+        //     item.pending,
+        //     `${item.percentage}%`
+        //   ]),
+        //   startY: currentY,
+        //   theme: 'grid',
+        //   styles: { fontSize: 10 },
+        //   headStyles: { fillColor: [41, 128, 185] }
+        // });
 
         // Evolución Temporal
         doc.addPage();
         doc.setFontSize(16);
         doc.text('Evolución Temporal', 14, 20);
 
-        doc.autoTable({
-          head: [['Fecha', 'Total', 'Canjeados', 'Tasa de Canje']],
-          body: timeStats.map(stat => [
-            new Date(stat.date).toLocaleDateString(),
-            stat.total,
-            stat.claimed,
-            `${Math.round((stat.claimed / stat.total) * 100)}%`
-          ]),
-          startY: 30,
-          theme: 'grid',
-          styles: { fontSize: 10 },
-          headStyles: { fillColor: [41, 128, 185] }
-        });
+        // doc.autoTable({
+        //   head: [['Fecha', 'Total', 'Canjeados', 'Tasa de Canje']],
+        //   body: timeStats.map(stat => [
+        //     new Date(stat.date).toLocaleDateString(),
+        //     stat.total,
+        //     stat.claimed,
+        //     `${Math.round((stat.claimed / stat.total) * 100)}%`
+        //   ]),
+        //   startY: 30,
+        //   theme: 'grid',
+        //   styles: { fontSize: 10 },
+        //   headStyles: { fillColor: [41, 128, 185] }
+        // });
 
         doc.save(`${filename}.pdf`);
         break;

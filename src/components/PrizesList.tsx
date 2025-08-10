@@ -32,7 +32,7 @@ const PrizesList: React.FC = () => {
       setLoading(true);
       setError(null);
       const availablePrizes = await prizeService.getAvailablePrizes();
-      setPrizes(availablePrizes);
+      setPrizes(availablePrizes as any);
     } catch (err) {
       setError('Error al cargar los premios. Por favor, intenta nuevamente.');
       console.error('Error loading prizes:', err);
@@ -47,7 +47,7 @@ const PrizesList: React.FC = () => {
       const prize = prizes.find(p => p.id === prizeId);
       if (!prize) return;
       
-      const success = await prizeService.claimPrize(prize.code);
+      const success = await (prizeService as any).claimPrize(prize.code);
       if (success) {
         await loadPrizes(); // Refresh the list after claiming
       } else {
