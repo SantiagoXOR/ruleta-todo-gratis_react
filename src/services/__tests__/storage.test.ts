@@ -84,9 +84,9 @@ describe('StorageService', () => {
     });
   });
 
-  describe('remove', () => {
+  describe('removeItem', () => {
     it('debe eliminar datos correctamente', () => {
-      storage.remove('test');
+      storage.removeItem('test');
       expect(localStorageMock.removeItem).toHaveBeenCalledWith('ruleta_test');
     });
 
@@ -96,7 +96,7 @@ describe('StorageService', () => {
       });
 
       // No debería lanzar error
-      expect(() => storage.remove('test')).not.toThrow();
+      expect(() => storage.removeItem('test')).not.toThrow();
     });
   });
 

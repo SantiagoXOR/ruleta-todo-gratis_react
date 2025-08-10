@@ -1,10 +1,18 @@
 import { createClient } from '@supabase/supabase-js';
+import { Database } from '../types/database.types';
 
-const supabaseUrl = 'https://mmybmkqbxzqviqaoyqoc.supabase.co';
-const supabaseAnonKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1teWJta3FieHpxdmlxYW95cW9jIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MzQ4NzYxNzksImV4cCI6MjA1MDQ1MjE3OX0.VXUFEk8oKiH_bXhxNDquJ4LTOmW9gjFnHWZtFAgbG6I';
+const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
+const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
 
 if (!supabaseUrl || !supabaseAnonKey) {
   throw new Error('Faltan las credenciales de Supabase');
 }
 
-export const supabase = createClient(supabaseUrl, supabaseAnonKey); 
+export const supabase = createClient<Database>(supabaseUrl, supabaseAnonKey);
+
+// Tipos de ayuda para usar en los servicios
+export type Tables = Database['public']['Tables'];
+export type UserRow = Tables['users']['Row'];
+export type PrizeRow = Tables['prizes']['Row'];
+export type SpinRow = Tables['spins']['Row'];
+export type ClaimRow = Tables['claims']['Row']; 

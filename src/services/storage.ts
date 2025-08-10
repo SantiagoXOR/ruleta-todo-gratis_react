@@ -8,35 +8,48 @@ class StorageService {
   private prefix: string = 'ruleta_';
 
   setItem(key: string, value: any, expiry?: number): void {
-    const item: StorageItem<any> = {
-      value,
-      timestamp: Date.now(),
-      expiry
-    };
-    localStorage.setItem(this.prefix + key, JSON.stringify(item));
+    try {
+      const item: StorageItem<any> = {
+        value,
+        timestamp: Date.now(),
+        expiry
+      };
+      localStorage.setItem(this.prefix + key, JSON.stringify(item));
+    } catch (error) {
+      console.error('Error setting item in storage:', error);
+    }
   }
 
   getItem<T>(key: string): T | null {
-    const item = localStorage.getItem(this.prefix + key);
-    if (!item) return null;
+    try {
+      const item = localStorage.getItem(this.prefix + key);
+      if (!item) return null;
 
-    const storageItem: StorageItem<T> = JSON.parse(item);
-    
-    // Verificar si el item ha expirado
-    if (storageItem.expiry) {
-      const now = Date.now();
-      const age = now - storageItem.timestamp;
-      if (age >= storageItem.expiry) {
-        this.removeItem(key);
-        return null;
+      const storageItem: StorageItem<T> = JSON.parse(item);
+
+      // Verificar si el item ha expirado
+      if (storageItem.expiry) {
+        const now = Date.now();
+        const age = now - storageItem.timestamp;
+        if (age >= storageItem.expiry) {
+          this.removeItem(key);
+          return null;
+        }
       }
-    }
 
-    return storageItem.value;
+      return storageItem.value;
+    } catch (error) {
+      console.error('Error getting item from storage:', error);
+      return null;
+    }
   }
 
   removeItem(key: string): void {
-    localStorage.removeItem(this.prefix + key);
+    try {
+      localStorage.removeItem(this.prefix + key);
+    } catch (error) {
+      console.error('Error removing item from storage:', error);
+    }
   }
 
   clear(): void {

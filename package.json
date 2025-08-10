@@ -11,7 +11,8 @@
     "test": "vitest run --config vitest.config.ts",
     "test:ui": "vitest --ui",
     "test:coverage": "vitest run --coverage --config vitest.config.ts",
-    "test:watch": "vitest --config vitest.config.ts"
+    "test:watch": "vitest --config vitest.config.ts",
+    "seed": "tsx scripts/seed-data.ts"
   },
   "keywords": [],
   "author": "",
@@ -27,6 +28,7 @@
     "canvas-confetti": "^1.9.3",
     "chart.js": "^4.4.7",
     "date-fns": "^4.1.0",
+    "dotenv": "^16.4.7",
     "html-to-image": "^1.11.11",
     "jspdf": "^2.5.2",
     "jspdf-autotable": "^3.8.4",
@@ -37,6 +39,7 @@
     "react-router-dom": "^7.1.1",
     "react-toastify": "^11.0.2",
     "styled-components": "^6.0.7",
+    "tsx": "^4.19.2",
     "xlsx": "^0.18.5",
     "zustand": "^5.0.2"
   },

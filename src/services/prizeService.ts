@@ -1,140 +1,97 @@
-import { Prize } from '../types/prizes.types';
-import { prizesApi } from '../api/prizes';
-import { storage } from './storage';
-import { uniqueCodeService } from './uniqueCodeService';
-
-const CACHE_KEY = 'prizes_cache';
-const CACHE_DURATION = 5 * 60 * 1000; // 5 minutos
+import { supabase } from '../lib/supabase';
+import type { PrizeRow } from '../lib/supabase';
 
 export const prizeService = {
-  async getPrizeByCode(code: string): Promise<Prize | null> {
-    const response = await prizesApi.getPrizeByCode(code);
-    if (response.success && response.data) {
-      return response.data;
-    }
-    return null;
-  },
-
-  async claimPrize(code: string): Promise<boolean> {
-    const response = await prizesApi.claimPrize(code);
-    if (response.success) {
-      await this.clearCache();
-      return true;
-    }
-    return false;
-  },
-
-  async getAvailablePrizes(): Promise<Prize[]> {
-    const cached = this.getCachedPrizes();
-    if (cached) {
-      return cached;
-    }
-
+  async getAllPrizes() {
     try {
-      const prizes = await prizesApi.getAvailablePrizes();
-      this.cachePrizes(prizes);
-      return prizes;
+      const { data, error } = await supabase
+        .from('prizes')
+        .select('*')
+        .order('created_at', { ascending: false });
+
+      if (error) throw error;
+      return data;
     } catch (error) {
-      console.error('Error fetching available prizes:', error);
-      return [];
+      console.error('Error al obtener premios:', error);
+      throw error;
     }
   },
 
-  async getClaimedPrizes(): Promise<Prize[]> {
+  async getActivePrizes() {
     try {
-      return await prizesApi.getClaimedPrizes();
+      const { data, error } = await supabase
+        .from('prizes')
+        .select('*')
+        .eq('is_active', true)
+        .order('probability', { ascending: false });
+
+      if (error) throw error;
+      return data;
     } catch (error) {
-      console.error('Error fetching claimed prizes:', error);
-      return [];
+      console.error('Error al obtener premios activos:', error);
+      throw error;
     }
   },
 
-  async savePrize(prize: Omit<Prize, 'timestamp' | 'claimed' | 'code'>): Promise<Prize | null> {
+  async createPrize(prize: Omit<PrizeRow, 'id' | 'created_at'>) {
     try {
-      const uniqueCode = await uniqueCodeService.generateUniqueCode(prize.id);
-      if (!uniqueCode) return null;
+      const { data, error } = await supabase
+        .from('prizes')
+        .insert([prize])
+        .select()
+        .single();
 
-      const newPrize: Prize = {
-        ...prize,
-        code: uniqueCode.code,
-        timestamp: Date.now(),
-        claimed: false
-      };
-
-      const prizes = this.getPrizes();
-      prizes.push(newPrize);
-      storage.set(CACHE_KEY, prizes, CACHE_DURATION);
-      return newPrize;
+      if (error) throw error;
+      return data;
     } catch (error) {
-      console.error('Error saving prize:', error);
-      return null;
+      console.error('Error al crear premio:', error);
+      throw error;
     }
   },
 
-  async markPrizeAsClaimed(code: string, userId: string): Promise<boolean> {
+  async updatePrize(id: string, updates: Partial<PrizeRow>) {
     try {
-      const isCodeValid = await uniqueCodeService.validateCode(code);
-      if (!isCodeValid) return false;
+      const { data, error } = await supabase
+        .from('prizes')
+        .update(updates)
+        .eq('id', id)
+        .select()
+        .single();
 
-      const codeUsed = await uniqueCodeService.useCode(code, userId);
-      if (!codeUsed) return false;
+      if (error) throw error;
+      return data;
+    } catch (error) {
+      console.error('Error al actualizar premio:', error);
+      throw error;
+    }
+  },
 
-      const prizes = this.getPrizes();
-      const prizeIndex = prizes.findIndex(prize => prize.code === code);
-      
-      if (prizeIndex === -1) return false;
-      
-      prizes[prizeIndex].claimed = true;
-      storage.set(CACHE_KEY, prizes, CACHE_DURATION);
+  async deletePrize(id: string) {
+    try {
+      const { error } = await supabase
+        .from('prizes')
+        .delete()
+        .eq('id', id);
+
+      if (error) throw error;
       return true;
     } catch (error) {
-      console.error('Error claiming prize:', error);
-      return false;
+      console.error('Error al eliminar premio:', error);
+      throw error;
     }
   },
 
-  async isPrizeValid(code: string): Promise<boolean> {
+  async decrementStock(id: string) {
     try {
-      const isCodeValid = await uniqueCodeService.validateCode(code);
-      if (!isCodeValid) return false;
+      const { data, error } = await supabase.rpc('decrement_prize_stock', {
+        prize_id: id
+      });
 
-      const prize = this.getPrizeByCode(code);
-      if (!prize) return false;
-
-      const codeDetails = uniqueCodeService.getCodeDetails(code);
-      if (!codeDetails) return false;
-
-      if (uniqueCodeService.isCodeExpired(codeDetails)) return false;
-      if (uniqueCodeService.isCodeUsed(codeDetails)) return false;
-
-      return true;
+      if (error) throw error;
+      return data;
     } catch (error) {
-      console.error('Error validating prize:', error);
-      return false;
+      console.error('Error al decrementar stock:', error);
+      throw error;
     }
-  },
-
-  private getCachedPrizes(): Prize[] | null {
-    const cached = storage.get<{ prizes: Prize[], timestamp: number }>(CACHE_KEY);
-    if (!cached) return null;
-
-    const isExpired = Date.now() - cached.timestamp > CACHE_DURATION;
-    if (isExpired) {
-      storage.remove(CACHE_KEY);
-      return null;
-    }
-
-    return cached.prizes;
-  },
-
-  private cachePrizes(prizes: Prize[]): void {
-    storage.set(CACHE_KEY, {
-      prizes,
-      timestamp: Date.now()
-    });
-  },
-
-  async clearCache(): Promise<void> {
-    storage.remove(CACHE_KEY);
   }
 };

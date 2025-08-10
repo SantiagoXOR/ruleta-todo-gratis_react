@@ -1,4 +1,4 @@
-import { PrizeWithCode } from '../types/wheel.types';
+import type { PrizeWithCode } from '../types/wheel.types';
 
 export interface ValidationResponse {
   success: boolean;

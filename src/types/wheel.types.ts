@@ -1,4 +1,4 @@
-import { ReactElement, ReactNode } from 'react';
+import type { ReactNode } from 'react';
 
 export interface Prize {
   id: number;
@@ -45,4 +45,4 @@ export interface ConfettiOptions {
   scalar?: number;
 }
 
-export type { Prize, PrizeWithCode, WheelProps, ConfettiOptions };
+

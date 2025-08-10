@@ -221,7 +221,7 @@ class SecurityService {
   private setupAuthInterceptor(): void {
     // Configurar interceptor para añadir el token a todas las peticiones
     const originalFetch = window.fetch;
-    window.fetch = async (input: RequestInfo, init?: RequestInit) => {
+    window.fetch = async (input: RequestInfo | URL, init?: RequestInit) => {
       if (typeof input === 'string' && input.startsWith('/api/')) {
         init = init || {};
         init.headers = {
