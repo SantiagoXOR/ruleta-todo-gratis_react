@@ -250,16 +250,16 @@ const NotificationCenter: React.FC = () => {
       {showPreferences ? (
         renderPreferences()
       ) : (
-        <div className="notifications-list">
+        <div className="notifications-list" role="region" aria-live="polite" aria-label="Lista de notificaciones">
           {loading ? (
-            <div className="loading-state">
+            <div className="loading-state" role="status" aria-busy="true">
               <Icons.Spinner className="spin" />
               Cargando notificaciones...
             </div>
           ) : notifications.length > 0 ? (
             notifications.map(renderNotification)
           ) : (
-            <div className="empty-state">
+            <div className="empty-state" role="status">
               <Icons.Inbox />
               <p>No tienes notificaciones</p>
             </div>

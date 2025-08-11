@@ -12,9 +12,11 @@
   width: 100%;
   max-width: 400px;
   padding: var(--spacing-xl);
-  background-color: white;
+  background-color: var(--panel-bg-08);
+  border: 1px solid var(--panel-border);
   border-radius: var(--border-radius-lg);
-  box-shadow: var(--shadow-lg);
+  box-shadow: var(--panel-shadow);
+  backdrop-filter: blur(8px);
   animation: slideIn var(--transition-normal);
 }
 

@@ -417,33 +417,38 @@ function AdminDashboard() {
 
   return (
     <div className="admin-dashboard">
-      <nav className="dashboard-nav">
+      <nav className="dashboard-nav" aria-label="Navegación del panel">
         <button
           className={`nav-button ${activeTab === 'overview' ? 'active' : ''}`}
+          aria-current={activeTab === 'overview' ? 'page' : undefined}
           onClick={() => setActiveTab('overview')}
         >
           Vista General
         </button>
         <button
           className={`nav-button ${activeTab === 'stores' ? 'active' : ''}`}
+          aria-current={activeTab === 'stores' ? 'page' : undefined}
           onClick={() => setActiveTab('stores')}
         >
           Tiendas
         </button>
         <button
           className={`nav-button ${activeTab === 'users' ? 'active' : ''}`}
+          aria-current={activeTab === 'users' ? 'page' : undefined}
           onClick={() => setActiveTab('users')}
         >
           Usuarios
         </button>
         <button
           className={`nav-button ${activeTab === 'audit' ? 'active' : ''}`}
+          aria-current={activeTab === 'audit' ? 'page' : undefined}
           onClick={() => setActiveTab('audit')}
         >
           Auditoría
         </button>
         <button
           className={`nav-button ${activeTab === 'verifier' ? 'active' : ''}`}
+          aria-current={activeTab === 'verifier' ? 'page' : undefined}
           onClick={() => setActiveTab('verifier')}
         >
           Verificador

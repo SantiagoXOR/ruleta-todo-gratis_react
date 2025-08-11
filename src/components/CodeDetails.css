@@ -1,8 +1,10 @@
 .code-details {
-  background: #ffffff;
-  border-radius: 8px;
+  background: var(--panel-bg-08);
+  border: 1px solid var(--panel-border);
+  border-radius: 12px;
   padding: 1.5rem;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  box-shadow: var(--panel-shadow);
+  backdrop-filter: blur(8px);
   margin: 1rem 0;
 }
 
@@ -18,7 +20,7 @@
 .code-header h3 {
   margin: 0;
   font-size: 1.25rem;
-  color: #333;
+  color: var(--text-primary);
 }
 
 .code-status {
@@ -57,7 +59,7 @@
 }
 
 .info-row .label {
-  color: #5f6368;
+  color: var(--text-secondary);
   font-size: 0.875rem;
 }
 

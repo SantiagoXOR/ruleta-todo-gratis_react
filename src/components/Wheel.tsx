@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import '../styles/Wheel.css';
 import confetti from 'canvas-confetti';
 import { Icons } from './Icons';
@@ -12,40 +12,22 @@ interface Prize {
 
 const prizes: Prize[] = [
   {
-    name: "TODO GRATIS",
-    description: "Bonificamos el 100% de tu compra hasta $30.000",
-    icon: <Icons.Gift />,
-    color: '#FF6B6B'
-  },
-  {
-    name: "5% DESCUENTO",
-    description: "En toda la tienda",
-    icon: <Icons.Tag />,
-    color: '#FF8B94'
-  },
-  {
-    name: "BONO EXTRA",
-    description: "Cupón de $10.000",
-    icon: <Icons.Card />,
-    color: '#FFD93D'
-  },
-  {
-    name: "15% DESCUENTO",
-    description: "En productos seleccionados",
-    icon: <Icons.Tag />,
-    color: '#6C5CE7'
-  },
-  {
     name: "KIT DE PINTURA",
     description: "Con compras mayores a $50.000",
     icon: <Icons.Paint />,
     color: '#4ECDC4'
   },
   {
+    name: "10% GRATIS",
+    description: "En toda la tienda",
+    icon: <Icons.Tag />,
+    color: '#FF6B6B'
+  },
+  {
     name: "REGALO SORPRESA",
     description: "En tu próxima compra",
     icon: <Icons.Gift />,
-    color: '#A8E6CF'
+    color: '#4ECDC4'
   },
   {
     name: "20% DESCUENTO",
@@ -54,10 +36,28 @@ const prizes: Prize[] = [
     color: '#FF6B6B'
   },
   {
-    name: "10% DESCUENTO",
+    name: "BONO EXTRA",
+    description: "Cupón de $10.000",
+    icon: <Icons.Card />,
+    color: '#FFD93D'
+  },
+  {
+    name: "5% DESCUENTO",
+    description: "En toda la tienda",
+    icon: <Icons.Tag />,
+    color: '#6C5CE7'
+  },
+  {
+    name: "10% GRATIS",
     description: "En toda la tienda",
     icon: <Icons.Tag />,
     color: '#4ECDC4'
+  },
+  {
+    name: "20% DESCUENTO",
+    description: "En productos seleccionados",
+    icon: <Icons.Star />,
+    color: '#FF6B6B'
   }
 ];
 
@@ -78,6 +78,32 @@ const Wheel: React.FC = () => {
   const [selectedPrize, setSelectedPrize] = useState<Prize | null>(null);
   const [showPrize, setShowPrize] = useState<boolean>(false);
   const [prizeCode, setPrizeCode] = useState<string>('');
+  const wrapperRef = useRef<HTMLDivElement | null>(null);
+  const wheelRef = useRef<HTMLDivElement | null>(null);
+  const centerRef = useRef<HTMLButtonElement | null>(null);
+  const [labelRadiusPx, setLabelRadiusPx] = useState<number | null>(null);
+
+  // Calcular radio real según tamaño del wheel y botón central
+  useEffect(() => {
+    function compute() {
+      const wheel = wheelRef.current;
+      const center = centerRef.current;
+      if (!wheel || !center) return;
+      const wheelRect = wheel.getBoundingClientRect();
+      const centerRect = center.getBoundingClientRect();
+      const wheelRadius = wheelRect.width / 2;
+      const centerRadius = Math.max(centerRect.width, centerRect.height) / 2;
+      const ring = Math.min(Math.max(10, wheelRect.width * 0.03), 18); // similar a --ring
+      const gap = Math.max(12, wheelRect.width * 0.02); // separación visual del texto
+      const radius = wheelRadius - ring - centerRadius - gap;
+      setLabelRadiusPx(Math.max(0, radius));
+    }
+
+    compute();
+    window.addEventListener('resize', compute);
+    return () => window.removeEventListener('resize', compute);
+  }, []);
+
 
   const spinWheel = (): void => {
     if (isSpinning) return;
@@ -134,6 +160,20 @@ const Wheel: React.FC = () => {
     window.open(url, '_blank');
   };
 
+  // Ángulo fijo por segmento (dinámico según cantidad de premios)
+  const sliceAngle = 360 / prizes.length;
+
+  // Generar gradiente cónico dinámico basado en los colores de los premios
+  const generateConicGradient = (): string => {
+    const gradientStops = prizes.map((prize, index) => {
+      const startAngle = index * sliceAngle;
+      const endAngle = (index + 1) * sliceAngle;
+      return `${prize.color} ${startAngle}deg ${endAngle}deg`;
+    }).join(', ');
+
+    return `conic-gradient(${gradientStops})`;
+  };
+
   return (
     <div className="wheel-container">
       <div className="wheel-section">
@@ -142,38 +182,47 @@ const Wheel: React.FC = () => {
         <p className="subtitle">¡Participá y ganá premios increíbles!</p>
 
         <div className="wheel-wrapper">
-          <div className="wheel-marker"></div>
-          <div 
-            className={`wheel ${isSpinning ? 'spinning' : ''}`} 
-            style={{ 
+          <div
+            ref={wheelRef}
+            className={`wheel ${isSpinning ? 'is-spinning' : ''}`}
+            style={{
               transform: `rotate(${rotation}deg)`,
-              transition: isSpinning ? 'transform 5s cubic-bezier(0.17, 0.67, 0.12, 0.99)' : 'none'
-            }}
+              transition: isSpinning ? 'transform 5s cubic-bezier(0.17, 0.67, 0.12, 0.99)' : 'none',
+              '--slices': prizes.length,
+              background: generateConicGradient()
+            } as React.CSSProperties}
           >
-            {prizes.map((prize, index) => (
-              <div
-                key={index}
-                className="section"
-                style={{
-                  transform: `rotate(${(360 / prizes.length) * index}deg)`,
-                  backgroundColor: prize.color
-                }}
-              >
-                <div className="prize-content">
-                  <div className="prize-icon">{prize.icon}</div>
-                  <div className="prize-text">{prize.name}</div>
-                </div>
-              </div>
-            ))}
-          </div>
-          <div className="wheel-center-container">
-            <button 
-              className="wheel-center" 
-              onClick={spinWheel} 
+            <button
+              ref={centerRef}
+              className="wheel__center"
+              onClick={spinWheel}
               disabled={isSpinning}
+              aria-pressed={isSpinning}
+              aria-busy={isSpinning}
+              aria-live="polite"
+              aria-label={isSpinning ? 'Girando ruleta, por favor espera' : 'Girar la ruleta'}
             >
               ¡GIRÁ Y<br/>GANÁ!
             </button>
+            <div className="wheel__labels" ref={wrapperRef}>
+              {prizes.map((prize, index) => {
+                const angle = (index * sliceAngle);
+                const translate = labelRadiusPx != null ? `${labelRadiusPx}px` : '35%';
+                return (
+                  <span
+                    key={index}
+                    className="label"
+                    style={{
+                      transform: `rotate(${angle}deg) translate(${translate}) rotate(-${angle}deg)`
+                    } as React.CSSProperties}
+                  >
+                    {prize.icon}
+                    {prize.name}
+                  </span>
+                );
+              })}
+            </div>
+            <div className="wheel__pointer" aria-hidden="true"></div>
           </div>
         </div>
       </div>

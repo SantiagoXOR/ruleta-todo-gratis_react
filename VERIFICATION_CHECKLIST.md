@@ -58,12 +58,34 @@
 - **Solución actual**: Usando toLocaleDateString nativo
 - **Mejora futura**: Migrar a la nueva API de date-fns v4
 
+### 🎯 **Acceso a Funcionalidades Avanzadas (MODO DEMO)**
+
+1. **Página Principal - Ruleta** 🎰
+   - URL: `http://localhost:3001/`
+   - Funcionalidad: Ruleta interactiva con premios
+
+2. **Login de Administrador** 🔐
+   - URL: `http://localhost:3001/login`
+   - **Credenciales Demo:**
+     - Email: `admin@pintemas.com`
+     - Password: `demo123`
+
+3. **Dashboard de Administración** 📊
+   - URL: `http://localhost:3001/dashboard` (requiere login)
+   - Funcionalidades:
+     - Analytics avanzados con datos mock
+     - Análisis predictivo
+     - Estadísticas en tiempo real
+     - Gráficos interactivos
+     - Exportación de reportes
+
 ### 🎯 **Próximos Pasos Recomendados**
 
 1. **Verificación Manual** (AHORA)
-   - Abrir `http://localhost:3000/`
+   - Abrir `http://localhost:3001/`
    - Probar la funcionalidad de la ruleta
-   - Verificar que no hay errores en la consola del navegador
+   - Hacer login con las credenciales demo
+   - Explorar el dashboard de administración
 
 2. **Configuración de Producción**
    - Configurar variables de entorno para producción

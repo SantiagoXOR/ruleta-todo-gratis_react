@@ -2,11 +2,12 @@ import { createClient } from '@supabase/supabase-js';
 import { Database } from '../types/database.types';
 import { SUPABASE_URL, SUPABASE_ANON_KEY } from '../config';
 
-const supabaseUrl = SUPABASE_URL;
-const supabaseAnonKey = SUPABASE_ANON_KEY;
+const supabaseUrl = SUPABASE_URL || 'https://mock.supabase.co';
+const supabaseAnonKey = SUPABASE_ANON_KEY || 'mock-anon-key';
 
-if (!supabaseUrl || !supabaseAnonKey) {
-  throw new Error('Faltan las credenciales de Supabase');
+// Solo mostrar warning en desarrollo, no lanzar error en producción
+if ((!SUPABASE_URL || !SUPABASE_ANON_KEY) && process.env.NODE_ENV === 'development') {
+  console.warn('⚠️ Usando credenciales mock de Supabase. Configura VITE_SUPABASE_URL y VITE_SUPABASE_ANON_KEY para funcionalidad completa.');
 }
 
 export const supabase = createClient<Database>(supabaseUrl, supabaseAnonKey);

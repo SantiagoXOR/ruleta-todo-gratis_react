@@ -1,4 +1,4 @@
-import { API_BASE_URL } from '../config';
+import { API_BASE_URL, ENABLE_MOCK_API } from '../config';
 
 export interface PredictionData {
   expectedValue: number;
@@ -57,6 +57,35 @@ export interface Anomaly {
   description: string;
 }
 
+// Datos mock para análisis predictivo
+const MOCK_PREDICTION_DATA: PredictionData = {
+  expectedValue: 85.6,
+  confidence: 0.87,
+  trend: 'up',
+  factors: [
+    { name: 'Hora del día', impact: 0.34 },
+    { name: 'Día de la semana', impact: 0.28 },
+    { name: 'Promociones activas', impact: 0.23 },
+    { name: 'Clima', impact: 0.15 }
+  ]
+};
+
+const MOCK_TREND_ANALYSIS: TrendAnalysis = {
+  historicalData: [45, 52, 48, 61, 58, 67, 72, 69, 74, 81],
+  prediction: [78, 82, 85, 88, 91, 94, 97],
+  seasonality: {
+    daily: [0.8, 0.6, 0.4, 0.3, 0.5, 0.9, 1.2, 1.5, 1.3, 1.1, 1.0, 0.9, 0.8, 0.7, 0.8, 1.0, 1.2, 1.4, 1.6, 1.5, 1.3, 1.1, 1.0, 0.9],
+    weekly: [1.0, 1.1, 1.2, 1.3, 1.4, 1.6, 1.5],
+    monthly: [0.9, 0.95, 1.0, 1.05, 1.1, 1.15, 1.2, 1.1, 1.0, 0.95, 0.9, 0.85]
+  },
+  correlations: {
+    'temperatura': 0.65,
+    'promociones': 0.78,
+    'fin_de_semana': 0.45,
+    'eventos_especiales': 0.82
+  }
+};
+
 class PredictiveAnalyticsService {
   private async fetchWithAuth(endpoint: string, options: RequestInit = {}) {
     const response = await fetch(`${API_BASE_URL}/api/analytics/predictive${endpoint}`, {
@@ -75,6 +104,11 @@ class PredictiveAnalyticsService {
   }
 
   async getPrizePredictions(prizeId: string): Promise<PredictionData> {
+    if (ENABLE_MOCK_API) {
+      console.log('Usando datos mock para predicciones de premios');
+      await new Promise(resolve => setTimeout(resolve, 300));
+      return MOCK_PREDICTION_DATA;
+    }
     return this.fetchWithAuth(`/prizes/${prizeId}`);
   }
 
@@ -83,6 +117,11 @@ class PredictiveAnalyticsService {
     startDate: Date,
     endDate: Date
   ): Promise<TrendAnalysis> {
+    if (ENABLE_MOCK_API) {
+      console.log('Usando datos mock para análisis de tendencias');
+      await new Promise(resolve => setTimeout(resolve, 500));
+      return MOCK_TREND_ANALYSIS;
+    }
     return this.fetchWithAuth('/trends', {
       method: 'POST',
       body: JSON.stringify({

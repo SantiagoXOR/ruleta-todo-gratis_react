@@ -47,10 +47,12 @@
 }
 
 .stat-card {
-  background: white;
+  background: var(--panel-bg-08);
+  border: 1px solid var(--panel-border);
   padding: 1.5rem;
   border-radius: 12px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  box-shadow: var(--panel-shadow);
+  backdrop-filter: blur(8px);
   text-align: center;
 }
 
@@ -75,10 +77,12 @@
 }
 
 .chart-container {
-  background: white;
+  background: var(--panel-bg-05);
+  border: 1px solid var(--panel-border);
   padding: 1.5rem;
   border-radius: 12px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  box-shadow: var(--panel-shadow);
+  backdrop-filter: blur(8px);
   height: 400px;
 }
 

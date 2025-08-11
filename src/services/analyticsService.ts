@@ -1,4 +1,5 @@
 import { PrizeWithCode } from '../types/wheel.types';
+import { ENABLE_MOCK_API } from '../config';
 
 export interface AnalyticsData {
   totalSpins: number;
@@ -30,6 +31,42 @@ export interface AnalyticsData {
   };
 }
 
+// Datos mock para modo demo
+const MOCK_ANALYTICS_DATA: AnalyticsData = {
+  totalSpins: 1247,
+  totalPrizesWon: 892,
+  totalPrizesClaimed: 734,
+  averageClaimTime: 2.5,
+  prizeDistribution: {
+    'TODO GRATIS': { count: 156, percentage: 17.5 },
+    '5% DESCUENTO': { count: 234, percentage: 26.2 },
+    '10% DESCUENTO': { count: 178, percentage: 20.0 },
+    'BONO EXTRA': { count: 134, percentage: 15.0 },
+    '15% DESCUENTO': { count: 112, percentage: 12.6 },
+    'KIT DE PINTURA': { count: 78, percentage: 8.7 }
+  },
+  timeSeriesData: [
+    { date: '2024-01-01', spins: 45, prizes: 32, claims: 28 },
+    { date: '2024-01-02', spins: 52, prizes: 38, claims: 31 },
+    { date: '2024-01-03', spins: 48, prizes: 35, claims: 29 },
+    { date: '2024-01-04', spins: 61, prizes: 44, claims: 37 },
+    { date: '2024-01-05', spins: 58, prizes: 41, claims: 34 },
+    { date: '2024-01-06', spins: 67, prizes: 48, claims: 42 },
+    { date: '2024-01-07', spins: 72, prizes: 52, claims: 45 }
+  ],
+  userEngagement: {
+    dailyActiveUsers: 156,
+    weeklyActiveUsers: 892,
+    monthlyActiveUsers: 2847,
+    returnRate: 68.5
+  },
+  performanceMetrics: {
+    averageLoadTime: 1.2,
+    errorRate: 0.8,
+    successRate: 99.2
+  }
+};
+
 class AnalyticsService {
   private async fetchAnalytics(endpoint: string, params?: Record<string, any>): Promise<any> {
     try {
@@ -55,10 +92,17 @@ class AnalyticsService {
   }
 
   async getGeneralAnalytics(startDate?: Date, endDate?: Date): Promise<AnalyticsData> {
+    if (ENABLE_MOCK_API) {
+      console.log('Usando datos mock para analytics generales');
+      // Simular delay de API
+      await new Promise(resolve => setTimeout(resolve, 500));
+      return MOCK_ANALYTICS_DATA;
+    }
+
     const params: Record<string, string> = {};
     if (startDate) params.startDate = startDate.toISOString();
     if (endDate) params.endDate = endDate.toISOString();
-    
+
     return this.fetchAnalytics('general', params);
   }
 
