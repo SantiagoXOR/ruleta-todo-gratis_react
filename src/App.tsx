@@ -3,6 +3,7 @@ import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-d
 import Wheel from './components/Wheel';
 import AdminDashboard from './components/AdminDashboard';
 import Login from './components/Login';
+import PintemasLandingSimple from './pages/PintemasLandingSimple';
 import './styles/variables.css';
 import './styles/global.css';
 
@@ -19,8 +20,11 @@ function App() {
     <Router>
       <div className="app-container">
         <Routes>
-          {/* Ruta principal - Ruleta */}
-          <Route path="/" element={
+          {/* Ruta principal - Landing Pintemas */}
+          <Route path="/" element={<PintemasLandingSimple />} />
+
+          {/* Ruta de la ruleta */}
+          <Route path="/ruleta" element={
             <main className="content-wrapper">
               <section aria-label="Ruleta">
                 <Wheel />
@@ -46,4 +50,4 @@ function App() {
   );
 }
 
-export default App; 
+export default App;
