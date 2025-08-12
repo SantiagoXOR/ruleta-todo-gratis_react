@@ -128,8 +128,8 @@ const BentoHeroGrid: React.FC = () => {
             "title title title title"
             "image1 image1 image2 badges"
             "image1 image1 image2 whatsapp"
-            "gallery gallery brands brands"
-            "location location location location"
+            "gallery gallery location location"
+            "brands brands brands brands"
             "description description description description"
           `
         }}
