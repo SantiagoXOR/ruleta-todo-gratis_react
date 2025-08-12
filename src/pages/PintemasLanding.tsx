@@ -219,7 +219,7 @@ const BentoHeroGrid: React.FC = () => {
           </div>
         </div>
 
-        {/* Marcas compactas */}
+        {/* Marcas compactas - Solo marcas con logos disponibles */}
         <div
           className="rounded-2xl bg-white/90 ring-1 ring-black/5 p-3 flex flex-col justify-center"
           style={{ gridArea: 'brands' }}
@@ -227,33 +227,77 @@ const BentoHeroGrid: React.FC = () => {
           <div className="text-center mb-2">
             <h4 className="text-xs font-bold text-pintemas-purple">Mejores marcas</h4>
           </div>
-          <div className="grid grid-cols-2 gap-2">
-            <div className="bg-gray-50 rounded-lg p-2 flex items-center justify-center">
-              <img
-                src="./assets/logo/plavicon.png"
-                alt="Plavicon"
-                className="h-6 w-auto object-contain opacity-80"
-              />
-            </div>
-            <div className="bg-gray-50 rounded-lg p-2 flex items-center justify-center">
-              <img
-                src="./assets/logo/rustoleum.png"
-                alt="Rust-Oleum"
-                className="h-6 w-auto object-contain opacity-80"
-              />
-            </div>
-            <div className="bg-gray-50 rounded-lg p-2 flex items-center justify-center">
+          <div className="grid grid-cols-3 gap-1.5">
+            {/* Alba */}
+            <div className="bg-gray-50 rounded-lg p-1.5 flex items-center justify-center">
               <img
                 src="./assets/logo/alba.png"
                 alt="Alba"
-                className="h-6 w-auto object-contain opacity-80"
+                className="h-4 w-auto object-contain opacity-80"
               />
             </div>
-            <div className="bg-gray-50 rounded-lg p-2 flex items-center justify-center">
+            {/* Sherwin Williams */}
+            <div className="bg-gray-50 rounded-lg p-1.5 flex items-center justify-center">
               <img
                 src="./assets/logo/sherwin.png"
                 alt="Sherwin Williams"
-                className="h-6 w-auto object-contain opacity-80"
+                className="h-4 w-auto object-contain opacity-80"
+              />
+            </div>
+            {/* Plavicon */}
+            <div className="bg-gray-50 rounded-lg p-1.5 flex items-center justify-center">
+              <img
+                src="./assets/logo/plavicon.png"
+                alt="Plavicon"
+                className="h-4 w-auto object-contain opacity-80"
+              />
+            </div>
+            {/* Rust-Oleum */}
+            <div className="bg-gray-50 rounded-lg p-1.5 flex items-center justify-center">
+              <img
+                src="./assets/logo/rustoleum.png"
+                alt="Rust-Oleum"
+                className="h-4 w-auto object-contain opacity-80"
+              />
+            </div>
+            {/* Sinteplast */}
+            <div className="bg-gray-50 rounded-lg p-1.5 flex items-center justify-center">
+              <img
+                src="./assets/logo/sinteplast.png"
+                alt="Sinteplast"
+                className="h-4 w-auto object-contain opacity-80"
+              />
+            </div>
+            {/* Tersuave */}
+            <div className="bg-gray-50 rounded-lg p-1.5 flex items-center justify-center">
+              <img
+                src="./assets/logo/tersuave.png"
+                alt="Tersuave"
+                className="h-4 w-auto object-contain opacity-80"
+              />
+            </div>
+            {/* Cetol */}
+            <div className="bg-gray-50 rounded-lg p-1.5 flex items-center justify-center">
+              <img
+                src="./assets/logo/cetol.png"
+                alt="Cetol"
+                className="h-4 w-auto object-contain opacity-80"
+              />
+            </div>
+            {/* El Galgo */}
+            <div className="bg-gray-50 rounded-lg p-1.5 flex items-center justify-center">
+              <img
+                src="./assets/logo/elgalgo.png"
+                alt="El Galgo"
+                className="h-4 w-auto object-contain opacity-80"
+              />
+            </div>
+            {/* Petrilac */}
+            <div className="bg-gray-50 rounded-lg p-1.5 flex items-center justify-center">
+              <img
+                src="./assets/logo/petrilac.png"
+                alt="Petrilac"
+                className="h-4 w-auto object-contain opacity-80"
               />
             </div>
           </div>
@@ -304,7 +348,7 @@ const BentoHeroGrid: React.FC = () => {
 
       {/* Descripción */}
       <div
-        className="rounded-2xl bg-gradient-to-br from-purple-50 to-yellow-50/50 p-4 flex items-center justify-center text-center"
+        className="rounded-2xl bg-gradient-to-br from-purple-50 to-yellow-50/50 p-4 pb-2 flex items-center justify-center text-center"
         style={{ gridArea: 'description' }}
       >
         <p className="text-sm text-gray-700 leading-relaxed">
@@ -356,9 +400,8 @@ const MobileProductGallery: React.FC = () => {
 
   return (
     <div className="relative">
-      {/* Título del carrusel */}
-      <div className="flex items-center justify-between mb-4">
-        <h4 className="text-lg font-bold text-pintemas-purple">Nuestros Productos</h4>
+      {/* Indicadores del carrusel */}
+      <div className="flex justify-center mb-4">
         <div className="flex gap-1">
           {Array.from({ length: Math.ceil(productImages.length / 4) }).map((_, index) => (
             <div
@@ -770,135 +813,7 @@ const HeroImageCarousel: React.FC = () => {
   );
 };
 
-// Componente de carrusel de marcas argentinas
-const BrandsCarousel: React.FC = () => {
-  const [currentIndex, setCurrentIndex] = useState(0);
 
-  // Marcas con logos reales presentes en public/assets/logo
-  const brands = [
-    { name: "Alba", logo: "./assets/logo/alba.png", description: "Pinturas de calidad" },
-    { name: "Cetol", logo: "./assets/logo/cetol.png", description: "Protección para maderas" },
-    { name: "El Galgo", logo: "./assets/logo/elgalgo.png", description: "Herramientas y accesorios" },
-    { name: "Petrilac", logo: "./assets/logo/petrilac.png", description: "Soluciones para madera" },
-    { name: "Plavicon", logo: "./assets/logo/plavicon.png", description: "Impermeabilizantes" },
-    { name: "Rust-Oleum", logo: "./assets/logo/rustoleum.png", description: "Protección anticorrosiva" },
-    { name: "Sherwin Williams", logo: "./assets/logo/sherwin.png", description: "Líder en pinturas" },
-    { name: "Sinteplast", logo: "./assets/logo/sinteplast.png", description: "Revestimientos e innovación" },
-    { name: "Tersuave", logo: "./assets/logo/tersuave.png", description: "Pinturas y esmaltes" }
-  ];
-
-  // Auto-scroll del carrusel
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setCurrentIndex((prevIndex) =>
-        prevIndex === brands.length - 1 ? 0 : prevIndex + 1
-      );
-    }, 3000); // Cambia cada 3 segundos
-
-    return () => clearInterval(interval);
-  }, [brands.length]);
-
-  // Mostrar 4 marcas en desktop, 2 en tablet, 1 en mobile
-  const getVisibleBrands = () => {
-    const visibleCount = window.innerWidth >= 1024 ? 4 : window.innerWidth >= 640 ? 2 : 1;
-    const visible = [];
-
-    for (let i = 0; i < visibleCount; i++) {
-      const index = (currentIndex + i) % brands.length;
-      visible.push(brands[index]);
-    }
-
-    return visible;
-  };
-
-  const [visibleBrands, setVisibleBrands] = useState(getVisibleBrands());
-
-  useEffect(() => {
-    const handleResize = () => {
-      setVisibleBrands(getVisibleBrands());
-    };
-
-    setVisibleBrands(getVisibleBrands());
-    window.addEventListener('resize', handleResize);
-
-    return () => window.removeEventListener('resize', handleResize);
-  }, [currentIndex]);
-
-  return (
-    <div className="relative overflow-hidden">
-      {/* Carrusel */}
-      <div className="flex transition-transform duration-500 ease-in-out">
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 w-full">
-          {visibleBrands.map((brand, index) => (
-            <div
-              key={`${brand.name}-${currentIndex}-${index}`}
-              className="bg-white rounded-xl p-4 sm:p-6 shadow-sm hover:shadow-lg transition-all duration-300 border border-gray-100 hover:border-pintemas-purple/20 group"
-            >
-              <div className="text-center">
-                {/* Logo de la marca desde assets */}
-                <div className="mx-auto mb-4 flex items-center justify-center h-16 sm:h-20">
-                  <img
-                    src={brand.logo}
-                    alt={`Logo ${brand.name}`}
-                    className="max-h-16 sm:max-h-20 object-contain"
-                    loading="lazy"
-                  />
-                </div>
-
-                {/* Nombre de la marca */}
-                <h4 className="font-bold text-pintemas-purple text-base sm:text-lg mb-2">
-                  {brand.name}
-                </h4>
-
-                {/* Descripción */}
-                <p className="text-gray-600 text-xs sm:text-sm leading-relaxed">
-                  {brand.description}
-                </p>
-              </div>
-            </div>
-          ))}
-        </div>
-      </div>
-
-      {/* Indicadores */}
-      <div className="flex justify-center mt-6 sm:mt-8 space-x-2">
-        {brands.map((_, index) => (
-          <button
-            key={index}
-            onClick={() => setCurrentIndex(index)}
-            className={`w-2 h-2 rounded-full transition-all duration-300 ${
-              index === currentIndex
-                ? 'bg-pintemas-purple w-6'
-                : 'bg-gray-300 hover:bg-gray-400'
-            }`}
-            aria-label={`Ir a marca ${index + 1}`}
-          />
-        ))}
-      </div>
-
-      {/* Botones de navegación */}
-      <button
-        onClick={() => setCurrentIndex(currentIndex === 0 ? brands.length - 1 : currentIndex - 1)}
-        className="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-4 bg-white hover:bg-gray-50 text-pintemas-purple p-2 rounded-full shadow-md hover:shadow-lg transition-all duration-300 border border-gray-200"
-        aria-label="Marca anterior"
-      >
-        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-        </svg>
-      </button>
-
-      <button
-        onClick={() => setCurrentIndex(currentIndex === brands.length - 1 ? 0 : currentIndex + 1)}
-        className="absolute right-0 top-1/2 -translate-y-1/2 translate-x-4 bg-white hover:bg-gray-50 text-pintemas-purple p-2 rounded-full shadow-md hover:shadow-lg transition-all duration-300 border border-gray-200"
-        aria-label="Marca siguiente"
-      >
-        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-        </svg>
-      </button>
-    </div>
-  );
-};
 
 export default function PintemasLanding() {
   return (
@@ -926,11 +841,11 @@ export default function PintemasLanding() {
 
       {/* HERO - BENTO GRID LAYOUT */}
       <section className="relative bg-gradient-to-br from-white via-purple-50/30 to-yellow-50/30">
-        <div className="mx-auto max-w-6xl px-4 py-6 sm:py-12 md:py-16 lg:py-20">
+        <div className="mx-auto max-w-6xl px-4 py-4 sm:py-6 md:py-8 lg:py-10">
           {/* Desktop: Traditional layout, Mobile: Bento Grid */}
           <div className="hidden lg:grid lg:grid-cols-2 gap-y-6 lg:gap-12 items-center">
             {/* Content - Desktop layout */}
-            <div className="text-center lg:text-left space-y-4 lg:space-y-6">
+            <div className="text-center lg:text-left space-y-3 lg:space-y-4">
               <h1 className="text-lg sm:text-2xl md:text-3xl lg:text-4xl xl:text-5xl font-extrabold leading-tight text-pintemas-purple">
                 ¡Animate a renovar tu hogar!
               </h1>
@@ -973,6 +888,56 @@ export default function PintemasLanding() {
           {/* Mobile: Bento Grid Layout */}
           <div className="lg:hidden">
             <BentoHeroGrid />
+          </div>
+        </div>
+      </section>
+
+      {/* PRODUCTOS */}
+      <section className="py-2 sm:py-4 lg:py-6 bg-white">
+        <div className="mx-auto max-w-6xl px-4">
+          <h3 className="text-lg sm:text-xl md:text-2xl lg:text-3xl font-bold text-pintemas-purple text-center mb-3 sm:mb-4 lg:mb-6">
+            Nuestros Productos
+          </h3>
+
+          {/* Desktop: Grid de productos */}
+          <div className="hidden lg:grid lg:grid-cols-4 gap-6">
+            <div className="bg-gray-50 rounded-xl p-4 text-center hover:shadow-lg transition-shadow">
+              <img
+                src="./assets/products/product-1-bg-1.png"
+                alt="Producto Alba"
+                className="w-full h-48 object-contain"
+                loading="lazy"
+              />
+            </div>
+            <div className="bg-gray-50 rounded-xl p-4 text-center hover:shadow-lg transition-shadow">
+              <img
+                src="./assets/products/product-2-bg-1.png"
+                alt="Producto Strial"
+                className="w-full h-48 object-contain"
+                loading="lazy"
+              />
+            </div>
+            <div className="bg-gray-50 rounded-xl p-4 text-center hover:shadow-lg transition-shadow">
+              <img
+                src="./assets/products/product-3-bg-2.png"
+                alt="Producto Plavicon"
+                className="w-full h-48 object-contain"
+                loading="lazy"
+              />
+            </div>
+            <div className="bg-gray-50 rounded-xl p-4 text-center hover:shadow-lg transition-shadow">
+              <img
+                src="./assets/products/product-4-bg-1.png"
+                alt="Producto Danzke"
+                className="w-full h-48 object-contain"
+                loading="lazy"
+              />
+            </div>
+          </div>
+
+          {/* Mobile: Carrusel de productos */}
+          <div className="lg:hidden">
+            <MobileProductGallery />
           </div>
         </div>
       </section>
@@ -1045,150 +1010,9 @@ export default function PintemasLanding() {
         </div>
       </section>
 
-      {/* MEJORES MARCAS */}
-      <section className="py-6 sm:py-12 lg:py-16 bg-gray-50">
-        <div className="mx-auto max-w-6xl px-4">
-          <h3 className="text-lg sm:text-xl md:text-2xl lg:text-3xl font-bold text-pintemas-purple text-center mb-6 sm:mb-8 lg:mb-12">
-            Mejores marcas
-          </h3>
 
-          {/* Grid estático de todas las marcas */}
-          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4 sm:gap-6">
-            {/* Alba */}
-            <div className="bg-white rounded-xl p-4 sm:p-6 shadow-sm hover:shadow-lg transition-all duration-300 border border-gray-100 hover:border-pintemas-purple/20">
-              <div className="text-center">
-                <div className="mx-auto mb-3 sm:mb-4 flex items-center justify-center h-12 sm:h-16">
-                  <img
-                    src="./assets/logo/alba.png"
-                    alt="Logo Alba"
-                    className="max-h-12 sm:max-h-16 object-contain opacity-80"
-                    loading="lazy"
-                  />
-                </div>
-              </div>
-            </div>
 
-            {/* Cetol */}
-            <div className="bg-white rounded-xl p-4 sm:p-6 shadow-sm hover:shadow-lg transition-all duration-300 border border-gray-100 hover:border-pintemas-purple/20">
-              <div className="text-center">
-                <div className="mx-auto mb-3 sm:mb-4 flex items-center justify-center h-12 sm:h-16">
-                  <img
-                    src="./assets/logo/cetol.png"
-                    alt="Logo Cetol"
-                    className="max-h-12 sm:max-h-16 object-contain opacity-80"
-                    loading="lazy"
-                  />
-                </div>
-              </div>
-            </div>
 
-            {/* El Galgo */}
-            <div className="bg-white rounded-xl p-4 sm:p-6 shadow-sm hover:shadow-lg transition-all duration-300 border border-gray-100 hover:border-pintemas-purple/20">
-              <div className="text-center">
-                <div className="mx-auto mb-3 sm:mb-4 flex items-center justify-center h-12 sm:h-16">
-                  <img
-                    src="./assets/logo/elgalgo.png"
-                    alt="Logo El Galgo"
-                    className="max-h-12 sm:max-h-16 object-contain opacity-80"
-                    loading="lazy"
-                  />
-                </div>
-              </div>
-            </div>
-
-            {/* Petrilac */}
-            <div className="bg-white rounded-xl p-4 sm:p-6 shadow-sm hover:shadow-lg transition-all duration-300 border border-gray-100 hover:border-pintemas-purple/20">
-              <div className="text-center">
-                <div className="mx-auto mb-3 sm:mb-4 flex items-center justify-center h-12 sm:h-16">
-                  <img
-                    src="./assets/logo/petrilac.png"
-                    alt="Logo Petrilac"
-                    className="max-h-12 sm:max-h-16 object-contain opacity-80"
-                    loading="lazy"
-                  />
-                </div>
-              </div>
-            </div>
-
-            {/* Plavicon */}
-            <div className="bg-white rounded-xl p-4 sm:p-6 shadow-sm hover:shadow-lg transition-all duration-300 border border-gray-100 hover:border-pintemas-purple/20">
-              <div className="text-center">
-                <div className="mx-auto mb-3 sm:mb-4 flex items-center justify-center h-12 sm:h-16">
-                  <img
-                    src="./assets/logo/plavicon.png"
-                    alt="Logo Plavicon"
-                    className="max-h-12 sm:max-h-16 object-contain opacity-80"
-                    loading="lazy"
-                  />
-                </div>
-              </div>
-            </div>
-
-            {/* Rust-Oleum */}
-            <div className="bg-white rounded-xl p-4 sm:p-6 shadow-sm hover:shadow-lg transition-all duration-300 border border-gray-100 hover:border-pintemas-purple/20">
-              <div className="text-center">
-                <div className="mx-auto mb-3 sm:mb-4 flex items-center justify-center h-12 sm:h-16">
-                  <img
-                    src="./assets/logo/rustoleum.png"
-                    alt="Logo Rust-Oleum"
-                    className="max-h-12 sm:max-h-16 object-contain opacity-80"
-                    loading="lazy"
-                  />
-                </div>
-              </div>
-            </div>
-
-            {/* Sherwin Williams */}
-            <div className="bg-white rounded-xl p-4 sm:p-6 shadow-sm hover:shadow-lg transition-all duration-300 border border-gray-100 hover:border-pintemas-purple/20">
-              <div className="text-center">
-                <div className="mx-auto mb-3 sm:mb-4 flex items-center justify-center h-12 sm:h-16">
-                  <img
-                    src="./assets/logo/sherwin.png"
-                    alt="Logo Sherwin Williams"
-                    className="max-h-12 sm:max-h-16 object-contain opacity-80"
-                    loading="lazy"
-                  />
-                </div>
-              </div>
-            </div>
-
-            {/* Sinteplast */}
-            <div className="bg-white rounded-xl p-4 sm:p-6 shadow-sm hover:shadow-lg transition-all duration-300 border border-gray-100 hover:border-pintemas-purple/20">
-              <div className="text-center">
-                <div className="mx-auto mb-3 sm:mb-4 flex items-center justify-center h-12 sm:h-16">
-                  <img
-                    src="./assets/logo/sinteplast.png"
-                    alt="Logo Sinteplast"
-                    className="max-h-12 sm:max-h-16 object-contain opacity-80"
-                    loading="lazy"
-                  />
-                </div>
-              </div>
-            </div>
-
-            {/* Tersuave */}
-            <div className="bg-white rounded-xl p-4 sm:p-6 shadow-sm hover:shadow-lg transition-all duration-300 border border-gray-100 hover:border-pintemas-purple/20">
-              <div className="text-center">
-                <div className="mx-auto mb-3 sm:mb-4 flex items-center justify-center h-12 sm:h-16">
-                  <img
-                    src="./assets/logo/tersuave.png"
-                    alt="Logo Tersuave"
-                    className="max-h-12 sm:max-h-16 object-contain opacity-80"
-                    loading="lazy"
-                  />
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* PRODUCTOS - Solo móvil */}
-      <section className="py-6 sm:py-8 bg-white lg:hidden">
-        <div className="mx-auto max-w-6xl px-4">
-          <MobileProductGallery />
-        </div>
-      </section>
 
       {/* DESTACADOS / PROMOS */}
       <section className="py-6 sm:py-12 lg:py-16 bg-pintemas-purple text-pintemas-yellow">
