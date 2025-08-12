@@ -1001,9 +1001,46 @@ export default function PintemasLanding() {
             <BentoSolutionsGrid />
           </div>
 
-          {/* Mobile: Galería de productos adicional */}
+          {/* Mobile: Galería de asesoramiento */}
           <div className="lg:hidden px-4 mt-6">
-            <MobileProductGallery />
+            <div className="grid grid-cols-2 gap-3">
+              <div className="rounded-xl bg-gradient-to-br from-white to-gray-50 p-4 border border-gray-100 shadow-sm">
+                <div className="flex flex-col items-center text-center">
+                  <div className="w-12 h-12 bg-pintemas-purple/10 rounded-full flex items-center justify-center mb-3">
+                    <PaintRoller size={24} className="text-pintemas-purple" />
+                  </div>
+                  <h4 className="text-sm font-bold text-pintemas-purple mb-1">Pinturas</h4>
+                  <p className="text-xs text-gray-600">Amplia gama de colores</p>
+                </div>
+              </div>
+              <div className="rounded-xl bg-gradient-to-br from-white to-gray-50 p-4 border border-gray-100 shadow-sm">
+                <div className="flex flex-col items-center text-center">
+                  <div className="w-12 h-12 bg-pintemas-purple/10 rounded-full flex items-center justify-center mb-3">
+                    <Sparkles size={24} className="text-pintemas-purple" />
+                  </div>
+                  <h4 className="text-sm font-bold text-pintemas-purple mb-1">Microcemento</h4>
+                  <p className="text-xs text-gray-600">Acabados modernos</p>
+                </div>
+              </div>
+              <div className="rounded-xl bg-gradient-to-br from-white to-gray-50 p-4 border border-gray-100 shadow-sm">
+                <div className="flex flex-col items-center text-center">
+                  <div className="w-12 h-12 bg-pintemas-purple/10 rounded-full flex items-center justify-center mb-3">
+                    <PaintRoller size={24} className="text-pintemas-purple" />
+                  </div>
+                  <h4 className="text-sm font-bold text-pintemas-purple mb-1">Herramientas</h4>
+                  <p className="text-xs text-gray-600">Todo para pintar</p>
+                </div>
+              </div>
+              <div className="rounded-xl bg-gradient-to-br from-white to-gray-50 p-4 border border-gray-100 shadow-sm">
+                <div className="flex flex-col items-center text-center">
+                  <div className="w-12 h-12 bg-pintemas-purple/10 rounded-full flex items-center justify-center mb-3">
+                    <Sparkles size={24} className="text-pintemas-purple" />
+                  </div>
+                  <h4 className="text-sm font-bold text-pintemas-purple mb-1">Asesoramiento</h4>
+                  <p className="text-xs text-gray-600">Expertos en color</p>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </section>
@@ -1015,6 +1052,13 @@ export default function PintemasLanding() {
             Trabajamos con las mejores marcas argentinas
           </h3>
           <BrandsCarousel />
+        </div>
+      </section>
+
+      {/* PRODUCTOS - Solo móvil */}
+      <section className="py-6 sm:py-8 bg-white lg:hidden">
+        <div className="mx-auto max-w-6xl px-4">
+          <MobileProductGallery />
         </div>
       </section>
 
