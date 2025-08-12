@@ -1045,13 +1045,141 @@ export default function PintemasLanding() {
         </div>
       </section>
 
-      {/* MARCAS ARGENTINAS */}
+      {/* MEJORES MARCAS */}
       <section className="py-6 sm:py-12 lg:py-16 bg-gray-50">
         <div className="mx-auto max-w-6xl px-4">
           <h3 className="text-lg sm:text-xl md:text-2xl lg:text-3xl font-bold text-pintemas-purple text-center mb-6 sm:mb-8 lg:mb-12">
-            Trabajamos con las mejores marcas argentinas
+            Mejores marcas
           </h3>
-          <BrandsCarousel />
+
+          {/* Grid estático de todas las marcas */}
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4 sm:gap-6">
+            {/* Alba */}
+            <div className="bg-white rounded-xl p-4 sm:p-6 shadow-sm hover:shadow-lg transition-all duration-300 border border-gray-100 hover:border-pintemas-purple/20">
+              <div className="text-center">
+                <div className="mx-auto mb-3 sm:mb-4 flex items-center justify-center h-12 sm:h-16">
+                  <img
+                    src="./assets/logo/alba.png"
+                    alt="Logo Alba"
+                    className="max-h-12 sm:max-h-16 object-contain opacity-80"
+                    loading="lazy"
+                  />
+                </div>
+              </div>
+            </div>
+
+            {/* Cetol */}
+            <div className="bg-white rounded-xl p-4 sm:p-6 shadow-sm hover:shadow-lg transition-all duration-300 border border-gray-100 hover:border-pintemas-purple/20">
+              <div className="text-center">
+                <div className="mx-auto mb-3 sm:mb-4 flex items-center justify-center h-12 sm:h-16">
+                  <img
+                    src="./assets/logo/cetol.png"
+                    alt="Logo Cetol"
+                    className="max-h-12 sm:max-h-16 object-contain opacity-80"
+                    loading="lazy"
+                  />
+                </div>
+              </div>
+            </div>
+
+            {/* El Galgo */}
+            <div className="bg-white rounded-xl p-4 sm:p-6 shadow-sm hover:shadow-lg transition-all duration-300 border border-gray-100 hover:border-pintemas-purple/20">
+              <div className="text-center">
+                <div className="mx-auto mb-3 sm:mb-4 flex items-center justify-center h-12 sm:h-16">
+                  <img
+                    src="./assets/logo/elgalgo.png"
+                    alt="Logo El Galgo"
+                    className="max-h-12 sm:max-h-16 object-contain opacity-80"
+                    loading="lazy"
+                  />
+                </div>
+              </div>
+            </div>
+
+            {/* Petrilac */}
+            <div className="bg-white rounded-xl p-4 sm:p-6 shadow-sm hover:shadow-lg transition-all duration-300 border border-gray-100 hover:border-pintemas-purple/20">
+              <div className="text-center">
+                <div className="mx-auto mb-3 sm:mb-4 flex items-center justify-center h-12 sm:h-16">
+                  <img
+                    src="./assets/logo/petrilac.png"
+                    alt="Logo Petrilac"
+                    className="max-h-12 sm:max-h-16 object-contain opacity-80"
+                    loading="lazy"
+                  />
+                </div>
+              </div>
+            </div>
+
+            {/* Plavicon */}
+            <div className="bg-white rounded-xl p-4 sm:p-6 shadow-sm hover:shadow-lg transition-all duration-300 border border-gray-100 hover:border-pintemas-purple/20">
+              <div className="text-center">
+                <div className="mx-auto mb-3 sm:mb-4 flex items-center justify-center h-12 sm:h-16">
+                  <img
+                    src="./assets/logo/plavicon.png"
+                    alt="Logo Plavicon"
+                    className="max-h-12 sm:max-h-16 object-contain opacity-80"
+                    loading="lazy"
+                  />
+                </div>
+              </div>
+            </div>
+
+            {/* Rust-Oleum */}
+            <div className="bg-white rounded-xl p-4 sm:p-6 shadow-sm hover:shadow-lg transition-all duration-300 border border-gray-100 hover:border-pintemas-purple/20">
+              <div className="text-center">
+                <div className="mx-auto mb-3 sm:mb-4 flex items-center justify-center h-12 sm:h-16">
+                  <img
+                    src="./assets/logo/rustoleum.png"
+                    alt="Logo Rust-Oleum"
+                    className="max-h-12 sm:max-h-16 object-contain opacity-80"
+                    loading="lazy"
+                  />
+                </div>
+              </div>
+            </div>
+
+            {/* Sherwin Williams */}
+            <div className="bg-white rounded-xl p-4 sm:p-6 shadow-sm hover:shadow-lg transition-all duration-300 border border-gray-100 hover:border-pintemas-purple/20">
+              <div className="text-center">
+                <div className="mx-auto mb-3 sm:mb-4 flex items-center justify-center h-12 sm:h-16">
+                  <img
+                    src="./assets/logo/sherwin.png"
+                    alt="Logo Sherwin Williams"
+                    className="max-h-12 sm:max-h-16 object-contain opacity-80"
+                    loading="lazy"
+                  />
+                </div>
+              </div>
+            </div>
+
+            {/* Sinteplast */}
+            <div className="bg-white rounded-xl p-4 sm:p-6 shadow-sm hover:shadow-lg transition-all duration-300 border border-gray-100 hover:border-pintemas-purple/20">
+              <div className="text-center">
+                <div className="mx-auto mb-3 sm:mb-4 flex items-center justify-center h-12 sm:h-16">
+                  <img
+                    src="./assets/logo/sinteplast.png"
+                    alt="Logo Sinteplast"
+                    className="max-h-12 sm:max-h-16 object-contain opacity-80"
+                    loading="lazy"
+                  />
+                </div>
+              </div>
+            </div>
+
+            {/* Tersuave */}
+            <div className="bg-white rounded-xl p-4 sm:p-6 shadow-sm hover:shadow-lg transition-all duration-300 border border-gray-100 hover:border-pintemas-purple/20">
+              <div className="text-center">
+                <div className="mx-auto mb-3 sm:mb-4 flex items-center justify-center h-12 sm:h-16">
+                  <img
+                    src="./assets/logo/tersuave.png"
+                    alt="Logo Tersuave"
+                    className="max-h-12 sm:max-h-16 object-contain opacity-80"
+                    loading="lazy"
+                  />
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
       </section>
 
