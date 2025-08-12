@@ -316,31 +316,108 @@ const BentoHeroGrid: React.FC = () => {
   );
 };
 
-// Componente de galería de productos para móvil
+// Componente de carrusel de productos para móvil
 const MobileProductGallery: React.FC = () => {
+  const [currentIndex, setCurrentIndex] = React.useState(0);
+
+  // Imágenes de productos disponibles
   const productImages = [
-    { icon: PaintRoller, title: "Pinturas", desc: "Amplia gama de colores" },
-    { icon: Sparkles, title: "Microcemento", desc: "Acabados modernos" },
-    { icon: PaintRoller, title: "Herramientas", desc: "Todo para pintar" },
-    { icon: Sparkles, title: "Asesoramiento", desc: "Expertos en color" }
+    { src: './assets/products/product-1-bg-1.png', alt: 'Producto Pintemas 1', title: 'Pinturas Premium' },
+    { src: './assets/products/product-2-bg-1.png', alt: 'Producto Pintemas 2', title: 'Esmaltes Sintéticos' },
+    { src: './assets/products/product-3-bg-2.png', alt: 'Producto Pintemas 3', title: 'Látex Interior' },
+    { src: './assets/products/product-4-bg-1.png', alt: 'Producto Pintemas 4', title: 'Antióxidos' },
+    { src: './assets/products/product-5-bg-1.png', alt: 'Producto Pintemas 5', title: 'Barnices' },
+    { src: './assets/products/product-6-bg-2.png', alt: 'Producto Pintemas 6', title: 'Impregnantes' },
+    { src: './assets/products/product-7-bg-1.png', alt: 'Producto Pintemas 7', title: 'Microcemento' },
+    { src: './assets/products/product-8-bg-1.png', alt: 'Producto Pintemas 8', title: 'Herramientas' },
+    { src: './assets/products/barniz-campbell-1l-petrilac.jpg', alt: 'Barniz Campbell', title: 'Barniz Campbell' },
+    { src: './assets/products/sintetico-converlux-1l-petrilac.jpg', alt: 'Sintético Converlux', title: 'Sintético Converlux' },
+    { src: './assets/products/impregnante-danzke-1l-petrilac.jpg', alt: 'Impregnante Danzke', title: 'Impregnante Danzke' }
   ];
 
+  // Auto-scroll cada 3 segundos
+  React.useEffect(() => {
+    const interval = setInterval(() => {
+      setCurrentIndex((prev) => (prev + 4) % productImages.length);
+    }, 3000);
+    return () => clearInterval(interval);
+  }, [productImages.length]);
+
+  // Obtener 4 productos para mostrar
+  const getVisibleProducts = () => {
+    const visible = [];
+    for (let i = 0; i < 4; i++) {
+      visible.push(productImages[(currentIndex + i) % productImages.length]);
+    }
+    return visible;
+  };
+
+  const visibleProducts = getVisibleProducts();
+
   return (
-    <div className="grid grid-cols-2 gap-3">
-      {productImages.map((product, index) => (
-        <div
-          key={index}
-          className="rounded-xl bg-gradient-to-br from-white to-gray-50 p-4 border border-gray-100 shadow-sm"
-        >
-          <div className="flex flex-col items-center text-center">
-            <div className="w-12 h-12 bg-pintemas-purple/10 rounded-full flex items-center justify-center mb-3">
-              <product.icon size={24} className="text-pintemas-purple" />
-            </div>
-            <h4 className="text-sm font-bold text-pintemas-purple mb-1">{product.title}</h4>
-            <p className="text-xs text-gray-600">{product.desc}</p>
-          </div>
+    <div className="relative">
+      {/* Título del carrusel */}
+      <div className="flex items-center justify-between mb-4">
+        <h4 className="text-lg font-bold text-pintemas-purple">Nuestros Productos</h4>
+        <div className="flex gap-1">
+          {Array.from({ length: Math.ceil(productImages.length / 4) }).map((_, index) => (
+            <div
+              key={index}
+              className={`w-2 h-2 rounded-full transition-colors ${
+                Math.floor(currentIndex / 4) === index ? 'bg-pintemas-purple' : 'bg-gray-300'
+              }`}
+            />
+          ))}
         </div>
-      ))}
+      </div>
+
+      {/* Grid 1x4 de productos */}
+      <div className="grid grid-cols-4 gap-2">
+        {visibleProducts.map((product, index) => (
+          <div
+            key={`${currentIndex}-${index}`}
+            className="aspect-square rounded-xl overflow-hidden bg-white shadow-sm border border-gray-100 hover:shadow-md transition-all duration-300"
+          >
+            <div className="relative w-full h-full">
+              <img
+                src={product.src}
+                alt={product.alt}
+                className="w-full h-full object-cover"
+                loading="lazy"
+              />
+              {/* Overlay con título */}
+              <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
+              <div className="absolute bottom-0 left-0 right-0 p-2">
+                <p className="text-white text-xs font-semibold text-center leading-tight">
+                  {product.title}
+                </p>
+              </div>
+            </div>
+          </div>
+        ))}
+      </div>
+
+      {/* Controles de navegación */}
+      <div className="flex justify-center gap-2 mt-4">
+        <button
+          onClick={() => setCurrentIndex((prev) => (prev - 4 + productImages.length) % productImages.length)}
+          className="w-8 h-8 rounded-full bg-pintemas-purple/10 hover:bg-pintemas-purple/20 flex items-center justify-center transition-colors"
+          aria-label="Productos anteriores"
+        >
+          <svg className="w-4 h-4 text-pintemas-purple" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+          </svg>
+        </button>
+        <button
+          onClick={() => setCurrentIndex((prev) => (prev + 4) % productImages.length)}
+          className="w-8 h-8 rounded-full bg-pintemas-purple/10 hover:bg-pintemas-purple/20 flex items-center justify-center transition-colors"
+          aria-label="Productos siguientes"
+        >
+          <svg className="w-4 h-4 text-pintemas-purple" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+          </svg>
+        </button>
+      </div>
     </div>
   );
 };
