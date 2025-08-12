@@ -128,7 +128,7 @@ const BentoHeroGrid: React.FC = () => {
             "title title title title"
             "image1 image1 image2 badges"
             "image1 image1 image2 whatsapp"
-            "gallery gallery gallery gallery"
+            "gallery gallery brands brands"
             "location location location location"
             "description description description description"
           `
@@ -215,6 +215,46 @@ const BentoHeroGrid: React.FC = () => {
                   />
                 ))}
               </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Marcas compactas */}
+        <div
+          className="rounded-2xl bg-white/90 ring-1 ring-black/5 p-3 flex flex-col justify-center"
+          style={{ gridArea: 'brands' }}
+        >
+          <div className="text-center mb-2">
+            <h4 className="text-xs font-bold text-pintemas-purple">Mejores marcas</h4>
+          </div>
+          <div className="grid grid-cols-2 gap-2">
+            <div className="bg-gray-50 rounded-lg p-2 flex items-center justify-center">
+              <img
+                src="./assets/logo/plavicon.png"
+                alt="Plavicon"
+                className="h-6 w-auto object-contain opacity-80"
+              />
+            </div>
+            <div className="bg-gray-50 rounded-lg p-2 flex items-center justify-center">
+              <img
+                src="./assets/logo/rustoleum.png"
+                alt="Rust-Oleum"
+                className="h-6 w-auto object-contain opacity-80"
+              />
+            </div>
+            <div className="bg-gray-50 rounded-lg p-2 flex items-center justify-center">
+              <img
+                src="./assets/logo/alba.png"
+                alt="Alba"
+                className="h-6 w-auto object-contain opacity-80"
+              />
+            </div>
+            <div className="bg-gray-50 rounded-lg p-2 flex items-center justify-center">
+              <img
+                src="./assets/logo/sherwin.png"
+                alt="Sherwin Williams"
+                className="h-6 w-auto object-contain opacity-80"
+              />
             </div>
           </div>
         </div>
@@ -666,15 +706,15 @@ const BrandsCarousel: React.FC = () => {
 
   // Marcas con logos reales presentes en public/assets/logo
   const brands = [
-    { name: "Alba", logo: "/assets/logo/alba.png", description: "Pinturas de calidad" },
-    { name: "Cetol", logo: "/assets/logo/cetol.png", description: "Protección para maderas" },
-    { name: "El Galgo", logo: "/assets/logo/elgalgo.png", description: "Herramientas y accesorios" },
-    { name: "Petrilac", logo: "/assets/logo/petrilac.png", description: "Soluciones para madera" },
-    { name: "Plavicon", logo: "/assets/logo/plavicon.png", description: "Impermeabilizantes" },
-    { name: "Rust-Oleum", logo: "/assets/logo/rustoleum.png", description: "Protección anticorrosiva" },
-    { name: "Sherwin Williams", logo: "/assets/logo/sherwin.png", description: "Líder en pinturas" },
-    { name: "Sinteplast", logo: "/assets/logo/sinteplast.png", description: "Revestimientos e innovación" },
-    { name: "Tersuave", logo: "/assets/logo/tersuave.png", description: "Pinturas y esmaltes" }
+    { name: "Alba", logo: "./assets/logo/alba.png", description: "Pinturas de calidad" },
+    { name: "Cetol", logo: "./assets/logo/cetol.png", description: "Protección para maderas" },
+    { name: "El Galgo", logo: "./assets/logo/elgalgo.png", description: "Herramientas y accesorios" },
+    { name: "Petrilac", logo: "./assets/logo/petrilac.png", description: "Soluciones para madera" },
+    { name: "Plavicon", logo: "./assets/logo/plavicon.png", description: "Impermeabilizantes" },
+    { name: "Rust-Oleum", logo: "./assets/logo/rustoleum.png", description: "Protección anticorrosiva" },
+    { name: "Sherwin Williams", logo: "./assets/logo/sherwin.png", description: "Líder en pinturas" },
+    { name: "Sinteplast", logo: "./assets/logo/sinteplast.png", description: "Revestimientos e innovación" },
+    { name: "Tersuave", logo: "./assets/logo/tersuave.png", description: "Pinturas y esmaltes" }
   ];
 
   // Auto-scroll del carrusel
