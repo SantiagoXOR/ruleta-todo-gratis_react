@@ -806,80 +806,17 @@ const HeroImageCarousel: React.FC = () => {
 const BrandsCarousel: React.FC = () => {
   const [currentIndex, setCurrentIndex] = useState(0);
 
-  // Marcas argentinas de pinturerías con logos estilizados
+  // Marcas con logos reales presentes en public/assets/logo
   const brands = [
-    {
-      name: "Alba",
-      logoText: "ALBA",
-      colors: { bg: "#1e40af", text: "#ffffff" },
-      description: "Pinturas de calidad premium"
-    },
-    {
-      name: "Sherwin Williams",
-      logoText: "SW",
-      colors: { bg: "#dc2626", text: "#ffffff" },
-      description: "Líder mundial en pinturas"
-    },
-    {
-      name: "Sinteplast",
-      logoText: "SINTEPLAST",
-      colors: { bg: "#059669", text: "#ffffff" },
-      description: "Innovación en revestimientos"
-    },
-    {
-      name: "Colorín",
-      logoText: "Colorín",
-      colors: { bg: "#7c3aed", text: "#fbbf24" },
-      description: "Colores que inspiran"
-    },
-    {
-      name: "Tersuave",
-      logoText: "TERSUAVE",
-      colors: { bg: "#0891b2", text: "#ffffff" },
-      description: "Suavidad y durabilidad"
-    },
-    {
-      name: "Pato",
-      logoText: "PATO",
-      colors: { bg: "#ea580c", text: "#ffffff" },
-      description: "Tradición argentina"
-    },
-    {
-      name: "Prestigio",
-      logoText: "PRESTIGIO",
-      colors: { bg: "#7c2d12", text: "#fbbf24" },
-      description: "Calidad superior"
-    },
-    {
-      name: "Latex",
-      logoText: "LATEX",
-      colors: { bg: "#1f2937", text: "#10b981" },
-      description: "Especialistas en látex"
-    },
-    {
-      name: "Cetol",
-      logoText: "CETOL",
-      colors: { bg: "#92400e", text: "#fbbf24" },
-      description: "Protección para maderas"
-    },
-    {
-      name: "Rust-Oleum",
-      logoText: "RUST-OLEUM",
-      colors: { bg: "#374151", text: "#f97316" },
-      description: "Protección anticorrosiva"
-    },
-    {
-      name: "Baucolor",
-      logoText: "BAUCOLOR",
-      colors: { bg: "#0f766e", text: "#ffffff" },
-      description: "Para la construcción"
-    },
-    {
-      name: "Duralex",
-      logoText: "DURALEX",
-      colors: { bg: "#be123c", text: "#ffffff" },
-      description: "Resistencia garantizada"
-    }
+    { name: "Alba", logo: "/assets/logo/alba.png", description: "Pinturas de calidad" },
+    { name: "Cetol", logo: "/assets/logo/cetol.png", description: "Protección para maderas" },
+    { name: "El Galgo", logo: "/assets/logo/elgalgo.png", description: "Herramientas y accesorios" },
+    { name: "Petrilac", logo: "/assets/logo/petrilac.png", description: "Soluciones para madera" },
+    { name: "Plavicon", logo: "/assets/logo/plavicon.png", description: "Impermeabilizantes" },
+    { name: "Rust-Oleum", logo: "/assets/logo/rustoleum.png", description: "Protección anticorrosiva" },
+    { name: "Sherwin Williams", logo: "/assets/logo/sherwin.png", description: "Líder en pinturas" },
+    { name: "Sinteplast", logo: "/assets/logo/sinteplast.png", description: "Revestimientos e innovación" },
+    { name: "Tersuave", logo: "/assets/logo/tersuave.png", description: "Pinturas y esmaltes" }
   ];
 
   // Auto-scroll del carrusel
@@ -930,17 +867,14 @@ const BrandsCarousel: React.FC = () => {
               className="bg-white rounded-xl p-4 sm:p-6 shadow-sm hover:shadow-lg transition-all duration-300 border border-gray-100 hover:border-pintemas-purple/20 group"
             >
               <div className="text-center">
-                {/* Logo estilizado */}
-                <div
-                  className="mx-auto mb-4 rounded-lg p-3 sm:p-4 group-hover:scale-105 transition-transform duration-300 flex items-center justify-center h-16 sm:h-20"
-                  style={{
-                    backgroundColor: brand.colors.bg,
-                    color: brand.colors.text
-                  }}
-                >
-                  <span className="font-bold text-xs sm:text-sm lg:text-base tracking-wide">
-                    {brand.logoText}
-                  </span>
+                {/* Logo de la marca desde assets */}
+                <div className="mx-auto mb-4 flex items-center justify-center h-16 sm:h-20">
+                  <img
+                    src={brand.logo}
+                    alt={`Logo ${brand.name}`}
+                    className="max-h-16 sm:max-h-20 object-contain"
+                    loading="lazy"
+                  />
                 </div>
 
                 {/* Nombre de la marca */}
