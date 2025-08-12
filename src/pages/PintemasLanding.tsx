@@ -104,8 +104,8 @@ const BentoHeroGrid: React.FC = () => {
 
   // Imágenes del local
   const localImages = [
-    { src: '/assets/images/hero1.jpg', alt: 'Interior de Pintemas - Productos de pintura' },
-    { src: '/assets/images/hero2.jpg', alt: 'Showroom Pintemas - Variedad de colores' }
+    { src: './assets/images/hero1.jpg', alt: 'Interior de Pintemas - Productos de pintura' },
+    { src: './assets/images/hero2.jpg', alt: 'Showroom Pintemas - Variedad de colores' }
   ];
 
   // Cambiar imagen cada 4 segundos
@@ -150,7 +150,7 @@ const BentoHeroGrid: React.FC = () => {
           style={{ gridArea: 'image1' }}
         >
           <img
-            src="/assets/images/hero1.jpg"
+            src="./assets/images/hero1.jpg"
             alt="Interior de Pintemas - Productos de pintura"
             className="w-full h-full object-cover"
           />
@@ -169,7 +169,7 @@ const BentoHeroGrid: React.FC = () => {
           style={{ gridArea: 'image2' }}
         >
           <img
-            src="/assets/images/hero2.jpg"
+            src="./assets/images/hero2.jpg"
             alt="Showroom Pintemas - Variedad de colores"
             className="w-full h-full object-cover"
           />
@@ -568,12 +568,12 @@ const HeroImageCarousel: React.FC = () => {
 
   const heroImages = [
     {
-      src: "/assets/images/hero1.jpg",
+      src: "./assets/images/hero1.jpg",
       alt: "Interior de Pintemas - Productos de pintura",
       caption: "Amplia variedad de productos"
     },
     {
-      src: "/assets/images/hero2.jpg",
+      src: "./assets/images/hero2.jpg",
       alt: "Tienda Pintemas - Asesoramiento profesional",
       caption: "Asesoramiento personalizado"
     }
