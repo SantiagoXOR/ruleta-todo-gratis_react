@@ -98,50 +98,126 @@ const Card: React.FC<{ title: string; desc: string; icon: IconType }> = ({ title
   </div>
 );
 
-// Componente Bento Grid para Hero Mobile
-const BentoHeroGrid: React.FC = () => (
-  <div className="bento-grid">
-    {/* Grid container con CSS Grid */}
-    <div
-      className="grid gap-3 h-auto min-h-[600px]"
-      style={{
-        gridTemplateColumns: 'repeat(3, 1fr)',
-        gridTemplateRows: 'auto',
-        gridTemplateAreas: `
-          "title title title"
-          "image image badges"
-          "image image whatsapp"
-          "location location location"
-          "description description description"
-        `
-      }}
-    >
-      {/* Título principal */}
-      <div
-        className="rounded-2xl bg-gradient-to-br from-pintemas-yellow to-pintemas-yellow-light p-4 flex items-center justify-center text-center"
-        style={{ gridArea: 'title' }}
-      >
-        <h1 className="text-xl font-extrabold text-pintemas-purple leading-tight">
-          ¡Animate a renovar tu hogar!
-        </h1>
-      </div>
+// Componente Bento Grid para Hero Mobile con imágenes del local
+const BentoHeroGrid: React.FC = () => {
+  const [currentImageIndex, setCurrentImageIndex] = React.useState(0);
 
-      {/* Imagen principal */}
+  // Imágenes del local
+  const localImages = [
+    { src: '/assets/images/hero1.jpg', alt: 'Interior de Pintemas - Productos de pintura' },
+    { src: '/assets/images/hero2.jpg', alt: 'Showroom Pintemas - Variedad de colores' }
+  ];
+
+  // Cambiar imagen cada 4 segundos
+  React.useEffect(() => {
+    const interval = setInterval(() => {
+      setCurrentImageIndex((prev) => (prev + 1) % localImages.length);
+    }, 4000);
+    return () => clearInterval(interval);
+  }, []);
+
+  return (
+    <div className="bento-grid">
+      {/* Grid container con CSS Grid mejorado */}
       <div
-        className="rounded-2xl bg-gradient-to-br from-gray-100 to-gray-200 overflow-hidden relative"
-        style={{ gridArea: 'image' }}
+        className="grid gap-3 h-auto min-h-[700px]"
+        style={{
+          gridTemplateColumns: 'repeat(4, 1fr)',
+          gridTemplateRows: 'auto',
+          gridTemplateAreas: `
+            "title title title title"
+            "image1 image1 image2 badges"
+            "image1 image1 image2 whatsapp"
+            "gallery gallery gallery gallery"
+            "location location location location"
+            "description description description description"
+          `
+        }}
       >
-        <div className="absolute inset-0 flex items-center justify-center">
-          <div className="w-16 h-16 bg-pintemas-purple/10 rounded-full flex items-center justify-center">
-            <PaintRoller size={32} className="text-pintemas-purple" />
+        {/* Título principal */}
+        <div
+          className="rounded-2xl bg-gradient-to-br from-pintemas-yellow to-pintemas-yellow-light p-4 flex items-center justify-center text-center"
+          style={{ gridArea: 'title' }}
+        >
+          <h1 className="text-xl font-extrabold text-pintemas-purple leading-tight">
+            ¡Animate a renovar tu hogar!
+          </h1>
+        </div>
+
+        {/* Imagen principal del local */}
+        <div
+          className="rounded-2xl overflow-hidden relative"
+          style={{ gridArea: 'image1' }}
+        >
+          <img
+            src="/assets/images/hero1.jpg"
+            alt="Interior de Pintemas - Productos de pintura"
+            className="w-full h-full object-cover"
+          />
+          <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent" />
+          <div className="absolute bottom-3 left-3 right-3">
+            <div className="bg-white/95 backdrop-blur-sm rounded-lg p-2">
+              <p className="text-xs font-bold text-pintemas-purple">Nuestro local en Alta Gracia</p>
+              <p className="text-xs text-gray-600">España 375</p>
+            </div>
           </div>
         </div>
-        <div className="absolute bottom-3 left-3 right-3">
-          <div className="bg-white/90 backdrop-blur-sm rounded-lg p-2">
-            <p className="text-xs font-medium text-pintemas-purple">Asesoramiento personalizado</p>
+
+        {/* Segunda imagen del local */}
+        <div
+          className="rounded-2xl overflow-hidden relative"
+          style={{ gridArea: 'image2' }}
+        >
+          <img
+            src="/assets/images/hero2.jpg"
+            alt="Showroom Pintemas - Variedad de colores"
+            className="w-full h-full object-cover"
+          />
+          <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent" />
+          <div className="absolute bottom-2 left-2 right-2">
+            <div className="bg-white/95 backdrop-blur-sm rounded-lg p-2">
+              <p className="text-xs font-bold text-pintemas-purple">Amplia variedad</p>
+            </div>
           </div>
         </div>
-      </div>
+
+        {/* Galería rotativa */}
+        <div
+          className="rounded-2xl overflow-hidden relative bg-gray-100"
+          style={{ gridArea: 'gallery' }}
+        >
+          {localImages.map((image, index) => (
+            <div
+              key={index}
+              className={`absolute inset-0 transition-opacity duration-1000 ${
+                index === currentImageIndex ? 'opacity-100' : 'opacity-0'
+              }`}
+            >
+              <img
+                src={image.src}
+                alt={image.alt}
+                className="w-full h-full object-cover"
+              />
+            </div>
+          ))}
+          <div className="absolute inset-0 bg-gradient-to-r from-pintemas-purple/80 to-transparent" />
+          <div className="absolute inset-0 flex items-center justify-start p-4">
+            <div className="text-white">
+              <h3 className="text-lg font-bold mb-1">Visitanos</h3>
+              <p className="text-sm opacity-90">Asesoramiento personalizado</p>
+              <div className="flex gap-1 mt-2">
+                {localImages.map((_, index) => (
+                  <div
+                    key={index}
+                    className={`w-2 h-2 rounded-full transition-colors ${
+                      index === currentImageIndex ? 'bg-pintemas-yellow' : 'bg-white/50'
+                    }`}
+                  />
+                ))}
+              </div>
+            </div>
+          </div>
+        </div>
 
       {/* Badges de promociones */}
       <div
@@ -197,7 +273,37 @@ const BentoHeroGrid: React.FC = () => (
       </div>
     </div>
   </div>
-);
+  );
+};
+
+// Componente de galería de productos para móvil
+const MobileProductGallery: React.FC = () => {
+  const productImages = [
+    { icon: PaintRoller, title: "Pinturas", desc: "Amplia gama de colores" },
+    { icon: Sparkles, title: "Microcemento", desc: "Acabados modernos" },
+    { icon: PaintRoller, title: "Herramientas", desc: "Todo para pintar" },
+    { icon: Sparkles, title: "Asesoramiento", desc: "Expertos en color" }
+  ];
+
+  return (
+    <div className="grid grid-cols-2 gap-3">
+      {productImages.map((product, index) => (
+        <div
+          key={index}
+          className="rounded-xl bg-gradient-to-br from-white to-gray-50 p-4 border border-gray-100 shadow-sm"
+        >
+          <div className="flex flex-col items-center text-center">
+            <div className="w-12 h-12 bg-pintemas-purple/10 rounded-full flex items-center justify-center mb-3">
+              <product.icon size={24} className="text-pintemas-purple" />
+            </div>
+            <h4 className="text-sm font-bold text-pintemas-purple mb-1">{product.title}</h4>
+            <p className="text-xs text-gray-600">{product.desc}</p>
+          </div>
+        </div>
+      ))}
+    </div>
+  );
+};
 
 // Componente Bento Grid para Soluciones Mobile
 const BentoSolutionsGrid: React.FC = () => (
@@ -456,254 +562,6 @@ const AnimatedScheduleBadge: React.FC = () => {
   );
 };
 
-export default function PintemasLanding() {
-  return (
-    <div className="min-h-screen bg-gray-50 text-gray-900">
-      {/* NAV */}
-      <header className="sticky top-0 z-40 backdrop-blur bg-pintemas-yellow/95 border-b border-pintemas-purple/20 shadow-sm">
-        <div className="mx-auto max-w-6xl px-4 py-3 sm:py-4">
-          <div className="flex items-center justify-between gap-2 sm:gap-4">
-            {/* Logo SVG */}
-            <div className="flex-shrink-0">
-              <img
-                src="/logo1.svg"
-                alt="Pinturerías Pintemas"
-                className="h-8 sm:h-10 md:h-12 lg:h-14 w-auto"
-              />
-            </div>
-
-            {/* Badge de horarios animado - Responsive */}
-            <div className="flex-shrink-0">
-              <AnimatedScheduleBadge />
-            </div>
-          </div>
-        </div>
-      </header>
-
-      {/* HERO - BENTO GRID LAYOUT */}
-      <section className="relative bg-gradient-to-br from-white via-purple-50/30 to-yellow-50/30">
-        <div className="mx-auto max-w-6xl px-4 py-6 sm:py-12 md:py-16 lg:py-20">
-          {/* Desktop: Traditional layout, Mobile: Bento Grid */}
-          <div className="hidden lg:grid lg:grid-cols-2 gap-y-6 lg:gap-12 items-center">
-            {/* Content - Desktop layout */}
-            <div className="text-center lg:text-left space-y-4 lg:space-y-6">
-              <h1 className="text-lg sm:text-2xl md:text-3xl lg:text-4xl xl:text-5xl font-extrabold leading-tight text-pintemas-purple">
-                ¡Animate a renovar tu hogar!
-              </h1>
-
-              <div className="flex flex-col sm:flex-row sm:flex-wrap items-center justify-center lg:justify-start gap-2 sm:gap-3">
-                <Badge icon={CreditCard}>12 cuotas sin interés</Badge>
-                <Badge icon={CreditCard} color="yellow">6 cuotas sin interés</Badge>
-                <Badge icon={Percent}>Promos todo el año</Badge>
-              </div>
-
-              <p className="text-gray-700 text-sm sm:text-base md:text-lg leading-relaxed max-w-2xl mx-auto lg:mx-0">
-                Colores cálidos que abrigan, inspiran y transforman. Asesoramiento real, productos técnicos
-                y cuotas sin interés.
-              </p>
-
-              <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center lg:justify-start">
-                <a
-                  href="https://wa.me/5493547637630"
-                  target="_blank"
-                  className="inline-flex items-center justify-center gap-2 rounded-2xl px-4 sm:px-5 py-3 min-h-[44px] font-semibold shadow-md bg-pintemas-purple text-pintemas-yellow hover:bg-pintemas-purple-dark transition-colors w-full sm:w-auto"
-                >
-                  <Phone size={16} className="sm:w-[18px] sm:h-[18px]" /> Escribinos por WhatsApp
-                </a>
-                <a
-                  href="https://maps.google.com/?q=España 375, Alta Gracia"
-                  target="_blank"
-                  className="inline-flex items-center justify-center gap-2 rounded-2xl px-4 sm:px-5 py-3 min-h-[44px] font-semibold border border-pintemas-purple text-pintemas-purple hover:bg-pintemas-purple hover:text-white transition-colors w-full sm:w-auto"
-                >
-                  <MapPin size={16} className="sm:w-[18px] sm:h-[18px]" /> España 375 – Alta Gracia
-                </a>
-              </div>
-            </div>
-
-            {/* Hero Images Carousel - Desktop */}
-            <div>
-              <HeroImageCarousel />
-            </div>
-          </div>
-
-          {/* Mobile: Bento Grid Layout */}
-          <div className="lg:hidden">
-            <BentoHeroGrid />
-          </div>
-        </div>
-      </section>
-
-      {/* BENEFITS / SOLUCIONES */}
-      <section className="py-6 sm:py-12 lg:py-16 bg-white">
-        <div className="mx-auto max-w-6xl">
-          <div className="px-4 mb-4 sm:mb-6 lg:mb-8">
-            <h2 className="text-lg sm:text-xl md:text-2xl lg:text-3xl font-bold text-pintemas-purple text-center lg:text-left">
-              Soluciones rápidas, resultados prolijos
-            </h2>
-          </div>
-
-          {/* Desktop: Grid layout */}
-          <div className="hidden lg:block lg:px-4">
-            <div className="lg:grid lg:grid-cols-4 gap-6">
-              <Card icon={PaintRoller} title="Microcemento" desc="Acabado continuo y durable. Ideal para renovar sin obra pesada." />
-              <Card icon={PaintRoller} title="Base niveladora" desc="Prepara y empareja superficies para un pintado profesional." />
-              <Card icon={PaintRoller} title="Enduidos & masillas" desc="Repará grietas y roturas con terminación lisa y pareja." />
-              <Card icon={PaintRoller} title="Antihumedad" desc="Protección e impermeabilización para paredes y techos." />
-            </div>
-          </div>
-
-          {/* Mobile: Bento Grid layout */}
-          <div className="lg:hidden px-4">
-            <BentoSolutionsGrid />
-          </div>
-        </div>
-      </section>
-
-      {/* MARCAS ARGENTINAS */}
-      <section className="py-6 sm:py-12 lg:py-16 bg-gray-50">
-        <div className="mx-auto max-w-6xl px-4">
-          <h3 className="text-lg sm:text-xl md:text-2xl lg:text-3xl font-bold text-pintemas-purple text-center mb-6 sm:mb-8 lg:mb-12">
-            Trabajamos con las mejores marcas argentinas
-          </h3>
-          <BrandsCarousel />
-        </div>
-      </section>
-
-      {/* DESTACADOS / PROMOS */}
-      <section className="py-6 sm:py-12 lg:py-16 bg-pintemas-purple text-pintemas-yellow">
-        <div className="mx-auto max-w-6xl px-4">
-          <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-y-4 lg:gap-6 text-center lg:text-left">
-            <h3 className="text-lg sm:text-xl md:text-2xl lg:text-3xl font-extrabold">Pagalo fácil</h3>
-            <div className="flex flex-col sm:flex-row sm:flex-wrap items-center justify-center lg:justify-end gap-2 sm:gap-3">
-              <Badge icon={CreditCard} color="yellow">12 cuotas sin interés</Badge>
-              <Badge icon={CreditCard} color="yellow">6 cuotas sin interés</Badge>
-              <Badge icon={Sparkles} color="yellow">Banco Hipotecario</Badge>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* HORARIOS & UBICACIÓN */}
-      <section className="py-6 sm:py-12 lg:py-16 bg-white">
-        <div className="mx-auto max-w-6xl px-4">
-          {/* Desktop: Layout tradicional */}
-          <div className="hidden lg:grid lg:grid-cols-2 gap-y-6 lg:gap-8 items-start">
-            {/* Horarios */}
-            <div className="rounded-xl sm:rounded-2xl ring-1 ring-black/5 p-4 sm:p-6 bg-neutral-50">
-              <h4 className="text-base sm:text-lg lg:text-xl font-bold mb-3 sm:mb-4 text-pintemas-purple">Estamos abiertos</h4>
-              <ul className="space-y-2 sm:space-y-3 text-neutral-700 text-sm sm:text-base">
-                <li className="flex items-start sm:items-center gap-2">
-                  <Clock size={16} className="sm:w-[18px] sm:h-[18px] text-pintemas-purple mt-0.5 sm:mt-0 flex-shrink-0" />
-                  <span>Lunes a Viernes: <b className="ml-1">7:30 a 21:00</b></span>
-                </li>
-                <li className="flex items-start sm:items-center gap-2">
-                  <Clock size={16} className="sm:w-[18px] sm:h-[18px] text-pintemas-purple mt-0.5 sm:mt-0 flex-shrink-0" />
-                  <span>Sábados: <b className="ml-1">8:30 a 13:30 y 17:00 a 21:00</b></span>
-                </li>
-                <li className="flex items-start sm:items-center gap-2">
-                  <Clock size={16} className="sm:w-[18px] sm:h-[18px] text-pintemas-purple mt-0.5 sm:mt-0 flex-shrink-0" />
-                  <span>Feriados: <b className="ml-1">8:00 a 13:30 y 17:00 a 20:00</b></span>
-                </li>
-              </ul>
-              <div className="mt-4 sm:mt-6 flex flex-col sm:flex-row sm:flex-wrap gap-2">
-                <Badge icon={Clock}>Horario de corrido</Badge>
-                <Badge icon={Sparkles}>¡No dormimos la siesta!</Badge>
-              </div>
-            </div>
-
-            {/* Mapa con iframe optimizado */}
-            <div className="rounded-xl sm:rounded-2xl overflow-hidden ring-1 ring-black/10 bg-neutral-200">
-              <div className="h-48 sm:h-64 lg:h-72 w-full">
-                <iframe
-                  src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3404.8234567890123!2d-64.4321!3d-31.6543!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2zMzHCsDM5JzE1LjUiUyA2NMKwMjUnNTUuNiJX!5e0!3m2!1ses!2sar!4v1234567890123!5m2!1ses!2sar"
-                  width="100%"
-                  height="100%"
-                  style={{ border: 0 }}
-                  allowFullScreen
-                  loading="lazy"
-                  referrerPolicy="no-referrer-when-downgrade"
-                  title="Ubicación de Pintemas - España 375, Alta Gracia"
-                />
-              </div>
-              <div className="p-3 sm:p-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 sm:gap-4 bg-pintemas-purple text-pintemas-yellow">
-                <div className="flex items-center gap-2 font-semibold text-sm sm:text-base">
-                  <MapPin size={16} className="sm:w-[18px] sm:h-[18px] flex-shrink-0" />
-                  España 375 – Alta Gracia
-                </div>
-                <a
-                  href="https://maps.google.com/?q=España 375, Alta Gracia"
-                  target="_blank"
-                  className="inline-flex items-center gap-1 underline font-semibold text-pintemas-yellow text-sm sm:text-base hover:text-pintemas-yellow/80 transition-colors min-h-[44px] px-2"
-                  rel="noopener noreferrer"
-                >
-                  Cómo llegar
-                </a>
-              </div>
-            </div>
-          </div>
-
-          {/* Mobile: Bento Grid layout */}
-          <div className="lg:hidden">
-            <BentoContactGrid />
-          </div>
-        </div>
-      </section>
-
-      {/* FAQ */}
-      <section className="py-6 sm:py-12 lg:py-16">
-        <div className="mx-auto max-w-6xl px-4">
-          <h4 className="text-base sm:text-lg lg:text-xl font-bold mb-4 sm:mb-6 lg:mb-8 text-pintemas-purple text-center lg:text-left">
-            Preguntas frecuentes
-          </h4>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-5 lg:gap-6">
-            <Card icon={MessageCircle} title="¿Asesoran proyectos?" desc="Sí, te ayudamos a elegir productos y colores según tu necesidad y presupuesto." />
-            <Card icon={CreditCard} title="¿Qué medios de pago?" desc="Tarjetas, transferencias y cuotas sin interés según banco y promo vigente." />
-            <Card icon={PaintRoller} title="¿Hay retiro en tienda?" desc="Sí, comprás por WhatsApp y retirás en España 375 o coordinamos envío." />
-          </div>
-        </div>
-      </section>
-
-      {/* FOOTER */}
-      <footer className="border-t border-black/5 bg-white">
-        <div className="mx-auto max-w-6xl px-4 py-6 sm:py-8">
-          <div className="flex flex-col lg:flex-row items-center justify-center lg:justify-between gap-4 lg:gap-6 text-center lg:text-left">
-            {/* Logo en footer */}
-            <div className="flex items-center gap-4 order-1">
-              <img
-                src="/logo1.svg"
-                alt="Pinturerías Pintemas"
-                className="h-6 sm:h-8 w-auto"
-              />
-              <div className="text-xs sm:text-sm text-neutral-600">
-                © {new Date().getFullYear()} — Siempre ofertas
-              </div>
-            </div>
-
-            {/* Badges de contacto */}
-            <div className="flex flex-col sm:flex-row sm:flex-wrap items-center justify-center gap-2 sm:gap-3 order-2">
-              <Badge icon={MessageCircle}>+54 9 3547 63-7630</Badge>
-              <Badge icon={MapPin} color="yellow">España 375 – Alta Gracia</Badge>
-            </div>
-          </div>
-        </div>
-      </footer>
-
-      {/* CTA FLOTANTE WHATSAPP - Solo mobile */}
-      <div className="fixed bottom-4 right-4 z-50 lg:hidden">
-        <a
-          href="https://wa.me/5493547637630"
-          target="_blank"
-          rel="noopener noreferrer"
-          className="flex items-center justify-center w-14 h-14 bg-green-500 hover:bg-green-600 text-white rounded-full shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105"
-          aria-label="Contactar por WhatsApp"
-        >
-          <MessageCircle size={24} strokeWidth={2} />
-        </a>
-      </div>
-    </div>
-  );
-}
-
 // Componente de carrusel de imágenes hero
 const HeroImageCarousel: React.FC = () => {
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
@@ -931,4 +789,257 @@ const BrandsCarousel: React.FC = () => {
     </div>
   );
 };
+
+export default function PintemasLanding() {
+  return (
+    <div className="min-h-screen bg-gray-50 text-gray-900">
+      {/* NAV */}
+      <header className="sticky top-0 z-40 backdrop-blur bg-pintemas-yellow/95 border-b border-pintemas-purple/20 shadow-sm">
+        <div className="mx-auto max-w-6xl px-4 py-3 sm:py-4">
+          <div className="flex items-center justify-between gap-2 sm:gap-4">
+            {/* Logo SVG */}
+            <div className="flex-shrink-0">
+              <img
+                src="/logo1.svg"
+                alt="Pinturerías Pintemas"
+                className="h-8 sm:h-10 md:h-12 lg:h-14 w-auto"
+              />
+            </div>
+
+            {/* Badge de horarios animado - Responsive */}
+            <div className="flex-shrink-0">
+              <AnimatedScheduleBadge />
+            </div>
+          </div>
+        </div>
+      </header>
+
+      {/* HERO - BENTO GRID LAYOUT */}
+      <section className="relative bg-gradient-to-br from-white via-purple-50/30 to-yellow-50/30">
+        <div className="mx-auto max-w-6xl px-4 py-6 sm:py-12 md:py-16 lg:py-20">
+          {/* Desktop: Traditional layout, Mobile: Bento Grid */}
+          <div className="hidden lg:grid lg:grid-cols-2 gap-y-6 lg:gap-12 items-center">
+            {/* Content - Desktop layout */}
+            <div className="text-center lg:text-left space-y-4 lg:space-y-6">
+              <h1 className="text-lg sm:text-2xl md:text-3xl lg:text-4xl xl:text-5xl font-extrabold leading-tight text-pintemas-purple">
+                ¡Animate a renovar tu hogar!
+              </h1>
+
+              <div className="flex flex-col sm:flex-row sm:flex-wrap items-center justify-center lg:justify-start gap-2 sm:gap-3">
+                <Badge icon={CreditCard}>12 cuotas sin interés</Badge>
+                <Badge icon={CreditCard} color="yellow">6 cuotas sin interés</Badge>
+                <Badge icon={Percent}>Promos todo el año</Badge>
+              </div>
+
+              <p className="text-gray-700 text-sm sm:text-base md:text-lg leading-relaxed max-w-2xl mx-auto lg:mx-0">
+                Colores cálidos que abrigan, inspiran y transforman. Asesoramiento real, productos técnicos
+                y cuotas sin interés.
+              </p>
+
+              <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center lg:justify-start">
+                <a
+                  href="https://wa.me/5493547637630"
+                  target="_blank"
+                  className="inline-flex items-center justify-center gap-2 rounded-2xl px-4 sm:px-5 py-3 min-h-[44px] font-semibold shadow-md bg-pintemas-purple text-pintemas-yellow hover:bg-pintemas-purple-dark transition-colors w-full sm:w-auto"
+                >
+                  <Phone size={16} className="sm:w-[18px] sm:h-[18px]" /> Escribinos por WhatsApp
+                </a>
+                <a
+                  href="https://maps.google.com/?q=España 375, Alta Gracia"
+                  target="_blank"
+                  className="inline-flex items-center justify-center gap-2 rounded-2xl px-4 sm:px-5 py-3 min-h-[44px] font-semibold border border-pintemas-purple text-pintemas-purple hover:bg-pintemas-purple hover:text-white transition-colors w-full sm:w-auto"
+                >
+                  <MapPin size={16} className="sm:w-[18px] sm:h-[18px]" /> España 375 – Alta Gracia
+                </a>
+              </div>
+            </div>
+
+            {/* Hero Images Carousel - Desktop */}
+            <div>
+              <HeroImageCarousel />
+            </div>
+          </div>
+
+          {/* Mobile: Bento Grid Layout */}
+          <div className="lg:hidden">
+            <BentoHeroGrid />
+          </div>
+        </div>
+      </section>
+
+      {/* BENEFITS / SOLUCIONES */}
+      <section className="py-6 sm:py-12 lg:py-16 bg-white">
+        <div className="mx-auto max-w-6xl">
+          <div className="px-4 mb-4 sm:mb-6 lg:mb-8">
+            <h2 className="text-lg sm:text-xl md:text-2xl lg:text-3xl font-bold text-pintemas-purple text-center lg:text-left">
+              Soluciones rápidas, resultados prolijos
+            </h2>
+          </div>
+
+          {/* Desktop: Grid layout */}
+          <div className="hidden lg:block lg:px-4">
+            <div className="lg:grid lg:grid-cols-4 gap-6">
+              <Card icon={PaintRoller} title="Microcemento" desc="Acabado continuo y durable. Ideal para renovar sin obra pesada." />
+              <Card icon={PaintRoller} title="Base niveladora" desc="Prepara y empareja superficies para un pintado profesional." />
+              <Card icon={PaintRoller} title="Enduidos & masillas" desc="Repará grietas y roturas con terminación lisa y pareja." />
+              <Card icon={PaintRoller} title="Antihumedad" desc="Protección e impermeabilización para paredes y techos." />
+            </div>
+          </div>
+
+          {/* Mobile: Bento Grid layout */}
+          <div className="lg:hidden px-4">
+            <BentoSolutionsGrid />
+          </div>
+
+          {/* Mobile: Galería de productos adicional */}
+          <div className="lg:hidden px-4 mt-6">
+            <MobileProductGallery />
+          </div>
+        </div>
+      </section>
+
+      {/* MARCAS ARGENTINAS */}
+      <section className="py-6 sm:py-12 lg:py-16 bg-gray-50">
+        <div className="mx-auto max-w-6xl px-4">
+          <h3 className="text-lg sm:text-xl md:text-2xl lg:text-3xl font-bold text-pintemas-purple text-center mb-6 sm:mb-8 lg:mb-12">
+            Trabajamos con las mejores marcas argentinas
+          </h3>
+          <BrandsCarousel />
+        </div>
+      </section>
+
+      {/* DESTACADOS / PROMOS */}
+      <section className="py-6 sm:py-12 lg:py-16 bg-pintemas-purple text-pintemas-yellow">
+        <div className="mx-auto max-w-6xl px-4">
+          <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-y-4 lg:gap-6 text-center lg:text-left">
+            <h3 className="text-lg sm:text-xl md:text-2xl lg:text-3xl font-extrabold">Pagalo fácil</h3>
+            <div className="flex flex-col sm:flex-row sm:flex-wrap items-center justify-center lg:justify-end gap-2 sm:gap-3">
+              <Badge icon={CreditCard} color="yellow">12 cuotas sin interés</Badge>
+              <Badge icon={CreditCard} color="yellow">6 cuotas sin interés</Badge>
+              <Badge icon={Sparkles} color="yellow">Banco Hipotecario</Badge>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* HORARIOS & UBICACIÓN */}
+      <section className="py-6 sm:py-12 lg:py-16 bg-white">
+        <div className="mx-auto max-w-6xl px-4">
+          {/* Desktop: Layout tradicional */}
+          <div className="hidden lg:grid lg:grid-cols-2 gap-y-6 lg:gap-8 items-start">
+            {/* Horarios */}
+            <div className="rounded-xl sm:rounded-2xl ring-1 ring-black/5 p-4 sm:p-6 bg-neutral-50">
+              <h4 className="text-base sm:text-lg lg:text-xl font-bold mb-3 sm:mb-4 text-pintemas-purple">Estamos abiertos</h4>
+              <ul className="space-y-2 sm:space-y-3 text-neutral-700 text-sm sm:text-base">
+                <li className="flex items-start sm:items-center gap-2">
+                  <Clock size={16} className="sm:w-[18px] sm:h-[18px] text-pintemas-purple mt-0.5 sm:mt-0 flex-shrink-0" />
+                  <span>Lunes a Viernes: <b className="ml-1">7:30 a 21:00</b></span>
+                </li>
+                <li className="flex items-start sm:items-center gap-2">
+                  <Clock size={16} className="sm:w-[18px] sm:h-[18px] text-pintemas-purple mt-0.5 sm:mt-0 flex-shrink-0" />
+                  <span>Sábados: <b className="ml-1">8:30 a 13:30 y 17:00 a 21:00</b></span>
+                </li>
+                <li className="flex items-start sm:items-center gap-2">
+                  <Clock size={16} className="sm:w-[18px] sm:h-[18px] text-pintemas-purple mt-0.5 sm:mt-0 flex-shrink-0" />
+                  <span>Feriados: <b className="ml-1">8:00 a 13:30 y 17:00 a 20:00</b></span>
+                </li>
+              </ul>
+              <div className="mt-4 sm:mt-6 flex flex-col sm:flex-row sm:flex-wrap gap-2">
+                <Badge icon={Clock}>Horario de corrido</Badge>
+                <Badge icon={Sparkles}>¡No dormimos la siesta!</Badge>
+              </div>
+            </div>
+
+            {/* Mapa con iframe optimizado */}
+            <div className="rounded-xl sm:rounded-2xl overflow-hidden ring-1 ring-black/10 bg-neutral-200">
+              <div className="h-48 sm:h-64 lg:h-72 w-full">
+                <iframe
+                  src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3404.8234567890123!2d-64.4321!3d-31.6543!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2zMzHCsDM5JzE1LjUiUyA2NMKwMjUnNTUuNiJX!5e0!3m2!1ses!2sar!4v1234567890123!5m2!1ses!2sar"
+                  width="100%"
+                  height="100%"
+                  style={{ border: 0 }}
+                  allowFullScreen
+                  loading="lazy"
+                  referrerPolicy="no-referrer-when-downgrade"
+                  title="Ubicación de Pintemas - España 375, Alta Gracia"
+                />
+              </div>
+              <div className="p-3 sm:p-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 sm:gap-4 bg-pintemas-purple text-pintemas-yellow">
+                <div className="flex items-center gap-2 font-semibold text-sm sm:text-base">
+                  <MapPin size={16} className="sm:w-[18px] sm:h-[18px] flex-shrink-0" />
+                  España 375 – Alta Gracia
+                </div>
+                <a
+                  href="https://maps.google.com/?q=España 375, Alta Gracia"
+                  target="_blank"
+                  className="inline-flex items-center gap-1 underline font-semibold text-pintemas-yellow text-sm sm:text-base hover:text-pintemas-yellow/80 transition-colors min-h-[44px] px-2"
+                  rel="noopener noreferrer"
+                >
+                  Cómo llegar
+                </a>
+              </div>
+            </div>
+          </div>
+
+          {/* Mobile: Bento Grid layout */}
+          <div className="lg:hidden">
+            <BentoContactGrid />
+          </div>
+        </div>
+      </section>
+
+      {/* FAQ */}
+      <section className="py-6 sm:py-12 lg:py-16">
+        <div className="mx-auto max-w-6xl px-4">
+          <h4 className="text-base sm:text-lg lg:text-xl font-bold mb-4 sm:mb-6 lg:mb-8 text-pintemas-purple text-center lg:text-left">
+            Preguntas frecuentes
+          </h4>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-5 lg:gap-6">
+            <Card icon={MessageCircle} title="¿Asesoran proyectos?" desc="Sí, te ayudamos a elegir productos y colores según tu necesidad y presupuesto." />
+            <Card icon={CreditCard} title="¿Qué medios de pago?" desc="Tarjetas, transferencias y cuotas sin interés según banco y promo vigente." />
+            <Card icon={PaintRoller} title="¿Hay retiro en tienda?" desc="Sí, comprás por WhatsApp y retirás en España 375 o coordinamos envío." />
+          </div>
+        </div>
+      </section>
+
+      {/* FOOTER */}
+      <footer className="border-t border-black/5 bg-white">
+        <div className="mx-auto max-w-6xl px-4 py-6 sm:py-8">
+          <div className="flex flex-col lg:flex-row items-center justify-center lg:justify-between gap-4 lg:gap-6 text-center lg:text-left">
+            {/* Logo en footer */}
+            <div className="flex items-center gap-4 order-1">
+              <img
+                src="/logo1.svg"
+                alt="Pinturerías Pintemas"
+                className="h-6 sm:h-8 w-auto"
+              />
+              <div className="text-xs sm:text-sm text-neutral-600">
+                © {new Date().getFullYear()} — Siempre ofertas
+              </div>
+            </div>
+
+            {/* Badges de contacto */}
+            <div className="flex flex-col sm:flex-row sm:flex-wrap items-center justify-center gap-2 sm:gap-3 order-2">
+              <Badge icon={MessageCircle}>+54 9 3547 63-7630</Badge>
+              <Badge icon={MapPin} color="yellow">España 375 – Alta Gracia</Badge>
+            </div>
+          </div>
+        </div>
+      </footer>
+
+      {/* CTA FLOTANTE WHATSAPP - Solo mobile */}
+      <div className="fixed bottom-4 right-4 z-50 lg:hidden">
+        <a
+          href="https://wa.me/5493547637630"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="flex items-center justify-center w-14 h-14 bg-green-500 hover:bg-green-600 text-white rounded-full shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105"
+          aria-label="Contactar por WhatsApp"
+        >
+          <MessageCircle size={24} strokeWidth={2} />
+        </a>
+      </div>
+    </div>
+  );
+}
 
