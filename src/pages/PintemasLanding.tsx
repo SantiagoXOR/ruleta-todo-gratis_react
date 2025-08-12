@@ -123,7 +123,7 @@ const BentoHeroGrid: React.FC = () => {
         className="grid gap-3 h-auto min-h-[700px]"
         style={{
           gridTemplateColumns: 'repeat(4, 1fr)',
-          gridTemplateRows: 'auto',
+          gridTemplateRows: '80px 120px 120px 120px 100px 80px',
           gridTemplateAreas: `
             "title title title title"
             "image1 image1 image2 badges"
