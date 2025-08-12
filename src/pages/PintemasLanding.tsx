@@ -322,17 +322,17 @@ const MobileProductGallery: React.FC = () => {
 
   // Imágenes de productos disponibles
   const productImages = [
-    { src: './assets/products/product-1-bg-1.png', alt: 'Producto Pintemas 1', title: 'Pinturas Premium' },
-    { src: './assets/products/product-2-bg-1.png', alt: 'Producto Pintemas 2', title: 'Esmaltes Sintéticos' },
-    { src: './assets/products/product-3-bg-2.png', alt: 'Producto Pintemas 3', title: 'Látex Interior' },
-    { src: './assets/products/product-4-bg-1.png', alt: 'Producto Pintemas 4', title: 'Antióxidos' },
-    { src: './assets/products/product-5-bg-1.png', alt: 'Producto Pintemas 5', title: 'Barnices' },
-    { src: './assets/products/product-6-bg-2.png', alt: 'Producto Pintemas 6', title: 'Impregnantes' },
-    { src: './assets/products/product-7-bg-1.png', alt: 'Producto Pintemas 7', title: 'Microcemento' },
-    { src: './assets/products/product-8-bg-1.png', alt: 'Producto Pintemas 8', title: 'Herramientas' },
-    { src: './assets/products/barniz-campbell-1l-petrilac.jpg', alt: 'Barniz Campbell', title: 'Barniz Campbell' },
-    { src: './assets/products/sintetico-converlux-1l-petrilac.jpg', alt: 'Sintético Converlux', title: 'Sintético Converlux' },
-    { src: './assets/products/impregnante-danzke-1l-petrilac.jpg', alt: 'Impregnante Danzke', title: 'Impregnante Danzke' }
+    { src: './assets/products/product-1-bg-1.png', alt: 'Producto Pintemas' },
+    { src: './assets/products/product-2-bg-1.png', alt: 'Producto Pintemas' },
+    { src: './assets/products/product-3-bg-2.png', alt: 'Producto Pintemas' },
+    { src: './assets/products/product-4-bg-1.png', alt: 'Producto Pintemas' },
+    { src: './assets/products/product-5-bg-1.png', alt: 'Producto Pintemas' },
+    { src: './assets/products/product-6-bg-2.png', alt: 'Producto Pintemas' },
+    { src: './assets/products/product-7-bg-1.png', alt: 'Producto Pintemas' },
+    { src: './assets/products/product-8-bg-1.png', alt: 'Producto Pintemas' },
+    { src: './assets/products/barniz-campbell-1l-petrilac.jpg', alt: 'Producto Pintemas' },
+    { src: './assets/products/sintetico-converlux-1l-petrilac.jpg', alt: 'Producto Pintemas' },
+    { src: './assets/products/impregnante-danzke-1l-petrilac.jpg', alt: 'Producto Pintemas' }
   ];
 
   // Auto-scroll cada 3 segundos
@@ -385,13 +385,6 @@ const MobileProductGallery: React.FC = () => {
                 className="w-full h-full object-cover"
                 loading="lazy"
               />
-              {/* Overlay con título */}
-              <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
-              <div className="absolute bottom-0 left-0 right-0 p-2">
-                <p className="text-white text-xs font-semibold text-center leading-tight">
-                  {product.title}
-                </p>
-              </div>
             </div>
           </div>
         ))}
